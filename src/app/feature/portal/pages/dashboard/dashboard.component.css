@@ -1,0 +1,26 @@
+.dashboard {
+  min-height: 100vh;
+  width: 100vw;
+  background-color: var(--tui-base-02);
+  display: flex;
+  justify-content: center;
+}
+
+.panel {
+  height: 100%;
+  width: 80%;
+  background-color: #fff;
+  border-radius: 20px;
+}
+
+.tag-pending {
+  background-color: var(--tui-support-03);
+}
+
+.tag-returned {
+  background-color: var(--tui-support-07);
+}
+
+.tag-new {
+  background-color: var(--tui-support-11);
+}

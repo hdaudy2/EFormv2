@@ -1,0 +1,99 @@
+<div class="dashboard py-5">
+  <div class="panel">
+    <br>
+    <br>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <h1 class="tui-text_h1">
+            Welcome Back, {{user.name}}
+          </h1>
+          <p class="tui-text_body-m px-2">
+            <span *ngIf="user.role === 'teller'">
+              Branch No. 09 |
+            </span>
+            Role: {{user.role | uppercase}}
+          </p>
+        </div>
+      </div>
+      <br>
+      <br>
+      <div class="d-flex justify-content-between">
+        <div class="col-3">
+          <button tuiButton appearance="secondary" size="s" class="m-1" (click)="onStatueChange('pending')" [disabled]="filter.status == 'pending'">New Submissions</button>
+          <button tuiButton appearance="secondary" size="s" class="m-1" (click)="onStatueChange('returned')" [disabled]="filter.status == 'returned'">Redirected Bank</button>
+        </div>
+        <div class="col-1">
+          <button tuiButton appearance="secondary-destructive" icon="tuiIconPower" size="s" (click)="logout()">Logout</button>
+        </div>
+      </div>
+      <br>
+      <br>
+      <div class="row">
+        <div class="col">
+          <p class="tui-text_body-m">
+            Remittance Applications
+          </p>
+        </div>
+      </div>
+      <div class="row">
+        <table tuiTable class="table" [columns]="columns">
+          <thead>
+            <tr tuiThGroup>
+              <th tuiTh [resizable]="true">
+                #
+              </th>
+              <th tuiTh [resizable]="true">
+                Name
+              </th>
+              <th tuiTh [resizable]="true">
+                Account No.
+              </th>
+              <th tuiTh [resizable]="true">
+                Amount
+              </th>
+              <th tuiTh [resizable]="true">
+                Currency
+              </th>
+              <th tuiTh [resizable]="true">
+                Status
+              </th>
+              <th tuiTh [resizable]="true">
+                Date
+              </th>
+              <th tuiTh [resizable]="true">Action</th>
+            </tr>
+          </thead>
+          <tbody tuiTbody [data]="selectedList">
+            <tr *ngFor="let item of selectedList; let index = index" tuiTr>
+              <td *tuiCell="'name'" tuiTd>
+                {{item.name.title}} &nbsp;
+                <tui-tag *ngIf="item.name.isNew" status="custom" class="tag-new" [hoverable]="true" value="NEW" size="s"></tui-tag>
+              </td>
+              <td *tuiCell="'status'" tuiTd>
+                <tui-tag status="custom" [ngClass]="{'tag-pending': filter.status == 'pending', 'tag-returned': filter.status == 'returned'}" [hoverable]="true" [value]="item.status"></tui-tag>
+              </td>
+              <td *tuiCell="'date'" tuiTd>
+                {{item.date | date: 'dd/MM/yyyy'}}
+              </td>
+              <td *tuiCell="'uuid'" tuiTd>
+                <button tuiButton appearance="flat" size="s" title="View" shape="rounded" type="button"
+                  (click)="view(item.uuid)">View</button>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td [colSpan]="columns.length">
+                <tui-table-pagination class="tui-space_top-2" [total]="total" (pageChange)="onPage($event)"
+                  (sizeChange)="onSize($event)"></tui-table-pagination>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <br>
+      <br>
+    </div>
+  </div>
+</div>
