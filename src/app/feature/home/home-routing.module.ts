@@ -7,16 +7,20 @@ import { CustomerComponent } from './pages/customer/customer.component';
 
 const routes: Routes = [
   {
-    path: "",
-    component: CustomerComponent
+    path: "form-remittance/:id",
+    component: FormComponent
+  },
+  {
+    path: "form-remittance",
+    component: FormComponent
   },
   {
     path: "home",
     component: HomeComponent
   },
   {
-    path: "form-remittance",
-    component: FormComponent
+    path: "",
+    component: CustomerComponent
   },
 ];
 

@@ -13,14 +13,3 @@
   border-radius: 20px;
 }
 
-.tag-pending {
-  background-color: var(--tui-support-03);
-}
-
-.tag-returned {
-  background-color: var(--tui-support-07);
-}
-
-.tag-new {
-  background-color: var(--tui-support-11);
-}

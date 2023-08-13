@@ -5,7 +5,7 @@ export interface CustomerModel {
   branchName: string;
   accountName: string;
   accountNo: string;
-  telephoneNo: string;
+  email: string;
   mobileNo: string;
   balance: number;
 }

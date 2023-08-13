@@ -2,13 +2,76 @@
   <div class="container">
     <div class="row pb-5">
       <div class="col">
-        <h1 class="tui-text_h1 mb-3">
-          Welcome to M Bank
+        <img src="assets/img/logo.png" alt="Bank Nizwa Logo">
+        <h1 class="tui-text_h1 mb-3 mt-4">
+          Welcome, {{customer?.accountName}}
         </h1>
-        <p class="tui-text_h6" style="color: var(--tui-text-03)">
+        <p class="tui-text_h6 px-1" style="color: var(--tui-text-03)">
           What would you like to perform
         </p>
       </div>
+    </div>
+    <div class="p-5 mb-5" *ngIf="this.applicationList.length > 0" style="background-color: #fff; border-radius: 20px;">
+      <div class="row pb-2">
+        <span class="tui-text_h6" style="color: var(--tui-success-fill)">
+          Previews Submission
+        </span>
+        <span class="tui-text_body-s pb-4" style="color: var(--tui-text-03);">
+          Check status and Edit
+        </span>
+      </div>
+      <table tuiTable class="table" [columns]="columns">
+        <thead>
+          <tr tuiThGroup>
+            <th tuiTh [resizable]="true">
+              #
+            </th>
+            <th tuiTh [resizable]="true">
+              Beneficiary Name
+            </th>
+            <th tuiTh [resizable]="true">
+              beneficiary IBAN
+            </th>
+            <th tuiTh [resizable]="true">
+              Amount
+            </th>
+            <th tuiTh [resizable]="true">
+              Currency
+            </th>
+            <th tuiTh [resizable]="true">
+              Status
+            </th>
+            <th tuiTh [resizable]="true">
+              Date
+            </th>
+            <th tuiTh [resizable]="true">Action</th>
+          </tr>
+        </thead>
+        <tbody tuiTbody [data]="selectedList">
+          <tr *ngFor="let item of selectedList; let index = index" tuiTr>
+            <td *tuiCell="'status'" tuiTd>
+              <tui-tag status="custom"
+                [ngClass]="{'tag-initialized': item.status == 'initialized', 'tag-pending': item.status == 'pending', 'tag-returned': item.status == 'returned', 'tag-rejected': item.status == 'rejected', 'tag-approved': item.status == 'approved'}"
+                [hoverable]="true" [value]="item.status"></tui-tag>
+            </td>
+            <td *tuiCell="'date'" tuiTd>
+              {{item.date | date: 'dd/MM/yyyy'}}
+            </td>
+            <td *tuiCell="'uuid'" tuiTd>
+              <button tuiButton appearance="flat" size="s" title="Edit Application" shape="rounded" type="button"
+                [disabled]="item.isEditable" (click)="view(item.uuid)">Edit</button>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td [colSpan]="columns.length">
+              <tui-table-pagination class="tui-space_top-2" [total]="total" (pageChange)="onPage($event)"
+                (sizeChange)="onSize($event)"></tui-table-pagination>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
     </div>
     <div class="p-5 mb-5" style="background-color: #fff; border-radius: 20px;">
       <div class="row pb-2">
@@ -37,9 +100,10 @@
             <p class="tui-island__paragraph">
               Send your Amount with ease to your love onces.
             </p>
-              <button tuiButton type="button" appearance="flat" size="m" class="tui-island__footer-button" routerLink="/form-remittance">
-                View
-              </button>
+            <button tuiButton type="button" appearance="flat" size="m" class="tui-island__footer-button"
+              routerLink="/form-remittance">
+              View
+            </button>
           </tui-island>
         </div>
         <div class="col">

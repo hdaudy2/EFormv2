@@ -1,1 +1,25 @@
 /* You can add global styles to this file, and also import other style files */
+
+.tag-initialized {
+  background-color: var(--tui-support-15);
+}
+
+.tag-pending {
+  background-color: var(--tui-support-21);
+}
+
+.tag-returned {
+  background-color: var(--tui-support-07);
+}
+
+.tag-rejected {
+  background-color: var(--tui-support-08);
+}
+
+.tag-approved {
+  background-color: var(--tui-support-03);
+}
+
+.tag-new {
+  background-color: var(--tui-support-11);
+}

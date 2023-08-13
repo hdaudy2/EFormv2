@@ -3,8 +3,9 @@ import { CommonModule } from '@angular/common';
 
 import { ReactiveFormsModule } from '@angular/forms';
 import { TuiErrorModule, TuiButtonModule, TuiDataListModule, TuiTextfieldControllerModule, TuiGroupModule } from '@taiga-ui/core';
-import { TuiFieldErrorPipeModule, TuiIslandModule, TuiCarouselModule, TuiInputModule, TuiTextareaModule, TuiRadioModule, TuiRadioBlockModule, TuiInputNumberModule, TuiCheckboxLabeledModule, TuiInputDateModule, TuiDataListWrapperModule, TuiSelectModule } from '@taiga-ui/kit';
+import { TuiFieldErrorPipeModule, TuiIslandModule, TuiCarouselModule, TuiInputModule, TuiTextareaModule, TuiRadioModule, TuiTagModule, TuiRadioBlockModule, TuiInputNumberModule, TuiCheckboxLabeledModule, TuiInputDateModule, TuiDataListWrapperModule, TuiSelectModule } from '@taiga-ui/kit';
 import { TuiCurrencyPipeModule } from '@taiga-ui/addon-commerce';
+import { TuiTableModule, TuiTablePaginationModule } from '@taiga-ui/addon-table';
 
 import { HomeRoutingModule } from './home-routing.module';
 
@@ -40,7 +41,10 @@ import { CustomerComponent } from './pages/customer/customer.component';
     TuiDataListWrapperModule,
     TuiSelectModule,
     TuiIslandModule,
+    TuiTagModule,
     TuiCarouselModule,
+    TuiTableModule,
+    TuiTablePaginationModule,
     // Taiga Pipes
     TuiFieldErrorPipeModule,
     TuiCurrencyPipeModule,

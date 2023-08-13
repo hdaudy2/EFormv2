@@ -18,6 +18,10 @@ export class ApplicationsService {
     const URL = this.endpoint + "?_sort=date,isNew&_order=desc,desc";
     return this.http.get<RemittanceModel[]>(URL);
   }
+  getAllCustomerSubmissions(accountNo: string): Observable<RemittanceModel[]> {
+    const URL = this.endpoint + `?remitter.account=${accountNo}&_sort=date&_order=desc`;
+    return this.http.get<RemittanceModel[]>(URL);
+  }
 
   validate(type, value): Observable<RemittanceModel[]> {
     const URL = `${this.endpoint}?${type}=${value}`;
@@ -36,6 +40,11 @@ export class ApplicationsService {
 
   getByUUID(uuid: string): Observable<RemittanceModel[]> {
     const URL = `${this.endpoint}?uuid=${uuid}`;
+    return this.http.get<RemittanceModel[]>(URL);
+  }
+
+  Search(uuid: string): Observable<RemittanceModel[]> {
+    const URL = `${this.endpoint}?uuid=${uuid}&statue=initialized`;
     return this.http.get<RemittanceModel[]>(URL);
   }
 

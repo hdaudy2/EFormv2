@@ -22,7 +22,7 @@
 .background{
   height: 100%;
   width: 60%;
-  background-color: var(--tui-support-16);
+  background-color: #6F298C;
   border-radius: 20px 0px 0px 20px;
   overflow: hidden;
   position: relative;

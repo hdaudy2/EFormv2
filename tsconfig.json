@@ -19,6 +19,7 @@
     "target": "ES2022",
     "module": "ES2022",
     "useDefineForClassFields": false,
+    "resolveJsonModule": true,
     "lib": [
       "ES2022",
       "dom"
@@ -26,6 +27,7 @@
     "paths": {
       "@model/*": ["./src/app/shared/models/*"],
       "@service/*": ["./src/app/shared/services/*"],
+      "@setting/*": ["./src/settings/*"],
     }
   },
   "angularCompilerOptions": {

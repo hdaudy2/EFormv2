@@ -103,6 +103,11 @@ export class DashboardComponent implements OnInit {
     this.page = 0;
     this.prepareData();
   }
+
+  newApplication() {
+    this.router.navigate(['/portal', 'new']);
+  }
+
   onStatueChange(status: 'pending' | 'approved' | 'returned' | 'rejected') {
     this.filter.status = status;
     this.prepareData();

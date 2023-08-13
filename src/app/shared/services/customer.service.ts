@@ -34,6 +34,11 @@ export class CustomerService {
     return this.http.get<CustomerModel[]>(URL);
   }
 
+  getByAccountNo(amount: string): Observable<CustomerModel[]> {
+    const URL = `${this.endpoint}?accountNo=${amount}`;
+    return this.http.get<CustomerModel[]>(URL);
+  }
+
   updateById(id: number, body: CustomerModel) {
     const URL = `${this.endpoint}/${id}`;
     return this.http.patch(URL, body);

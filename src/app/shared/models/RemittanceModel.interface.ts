@@ -14,7 +14,7 @@ interface Bank {
 interface Remitter {
   title: string;
   account: string;
-  telephone: string;
+  email: string;
   mobile: string;
 }
 
@@ -22,11 +22,18 @@ interface Beneficiary {
   name: string;
   address: string;
   dob: string;
-  title: string;
+  account: string;
   iban: string;
   bank: Bank
 }
 
+export enum STATUS {
+  initialized = "initialized",
+  pending = "pending",
+  approved = "approved",
+  returned = "returned",
+  rejected = "rejected",
+}
 export interface Teller {
   ReferenceNo: string;
   ChecksPerformedBy: string;
@@ -41,10 +48,18 @@ export interface Operations {
   ProcessedBy: string;
 }
 
-export interface Comment {
-  from: string;
-  comment: string;
-  date: number;
+// export interface Comment {
+//   comment: string;
+//   from: string;
+//   date: number;
+// }
+
+export interface Discrepancy {
+  id: string;
+  message: string;
+  to: "customer" | "branch";
+  from: "branch" | "operations";
+  status: "pending" | "resolved"
 }
 
 export interface RemittanceModel {
@@ -63,9 +78,10 @@ export interface RemittanceModel {
   detail: string;
   isNew: boolean;
   step?: string[];
-  comments?: Comment[];
-  stage: 'branch' | 'operations';
-  statue: 'pending' | 'approved' | 'returned' | 'rejected';
+  // comments?: Comment[];
+  Discrepancy?: Discrepancy[];
+  stage: 'customer' | 'branch' | 'operations';
+  statue: STATUS;
   createdOn: string;
   updatedOn: string;
 }

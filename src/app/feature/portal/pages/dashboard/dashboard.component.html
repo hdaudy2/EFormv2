@@ -15,16 +15,26 @@
             Role: {{user.role | uppercase}}
           </p>
         </div>
+        <div class="col" style="display: flex; justify-content: end;">
+          <img src="assets/img/logo.png" alt="Bank Nizwa Logo">
+        </div>
       </div>
       <br>
       <br>
       <div class="d-flex justify-content-between">
-        <div class="col-3">
-          <button tuiButton appearance="secondary" size="s" class="m-1" (click)="onStatueChange('pending')" [disabled]="filter.status == 'pending'">New Submissions</button>
-          <button tuiButton appearance="secondary" size="s" class="m-1" (click)="onStatueChange('returned')" [disabled]="filter.status == 'returned'">Redirected Bank</button>
+        <div class="col-2" *ngIf="user.role === 'teller'">
+          <button tuiButton appearance="primary" size="s" class="m-1" (click)="newApplication()">New
+            Application</button>
+        </div>
+        <div class="col-9">
+          <button tuiButton appearance="secondary" size="s" class="m-1" (click)="onStatueChange('pending')"
+            [disabled]="filter.status == 'pending'">New Submissions</button>
+          <button tuiButton appearance="secondary" size="s" class="m-1" (click)="onStatueChange('returned')"
+            [disabled]="filter.status == 'returned'">Redirected Bank</button>
         </div>
         <div class="col-1">
-          <button tuiButton appearance="secondary-destructive" icon="tuiIconPower" size="s" (click)="logout()">Logout</button>
+          <button tuiButton appearance="secondary-destructive" icon="tuiIconPower" size="s"
+            (click)="logout()">Logout</button>
         </div>
       </div>
       <br>
@@ -68,10 +78,13 @@
             <tr *ngFor="let item of selectedList; let index = index" tuiTr>
               <td *tuiCell="'name'" tuiTd>
                 {{item.name.title}} &nbsp;
-                <tui-tag *ngIf="item.name.isNew" status="custom" class="tag-new" [hoverable]="true" value="NEW" size="s"></tui-tag>
+                <tui-tag *ngIf="item.name.isNew" status="custom" class="tag-new" [hoverable]="true" value="NEW"
+                  size="s"></tui-tag>
               </td>
               <td *tuiCell="'status'" tuiTd>
-                <tui-tag status="custom" [ngClass]="{'tag-pending': filter.status == 'pending', 'tag-returned': filter.status == 'returned'}" [hoverable]="true" [value]="item.status"></tui-tag>
+                <tui-tag status="custom"
+                  [ngClass]="{'tag-pending': filter.status == 'pending', 'tag-returned': filter.status == 'returned'}"
+                  [hoverable]="true" [value]="item.status"></tui-tag>
               </td>
               <td *tuiCell="'date'" tuiTd>
                 {{item.date | date: 'dd/MM/yyyy'}}

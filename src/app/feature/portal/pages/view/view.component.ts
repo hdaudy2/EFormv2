@@ -2,27 +2,47 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TuiAlertService } from '@taiga-ui/core';
-import { TuiDay } from '@taiga-ui/cdk';
+import { TUI_DATE_FORMAT, TUI_DATE_SEPARATOR, TuiDay } from '@taiga-ui/cdk';
 
 import Cookies from 'js-cookie';
 import formatDistance from 'date-fns/formatDistance';
+import * as shortid from 'shortid';
 
-import { Comment, Operations, RemittanceModel, Teller } from '@model/RemittanceModel.interface';
+// import { Comment, Operations, RemittanceModel, STATUS, Teller } from '@model/RemittanceModel.interface';
+import { Discrepancy, Operations, RemittanceModel, STATUS } from '@model/RemittanceModel.interface';
 import { UserModel } from '@model/userModel.interface';
 
 import { ApplicationsService } from '@service/applications.service';
-import { UserService } from '@service/users.service';
+import { CustomerService } from '@service/customer.service';
+import { CustomerModel } from '@model/CustomerModel.interface';
+import { MailService } from '@service/mail.service';
+import { MailModel } from '@model/mailModel.interface';
 
+import * as settings from '@setting/config.json';
+
+const config = settings;
 @Component({
   selector: 'app-view',
   templateUrl: './view.component.html',
-  styleUrls: ['./view.component.css']
+  styleUrls: ['./view.component.css'],
+  providers: [
+    { provide: TUI_DATE_FORMAT, useValue: 'YMD' },
+    { provide: TUI_DATE_SEPARATOR, useValue: '/' },
+  ],
 })
 export class ViewComponent implements OnInit, OnDestroy {
   UUID: string;
   ID: number;
   user: UserModel;
   application: RemittanceModel = {} as any;
+  customer: CustomerModel;
+  discrepancy: Discrepancy;
+  redirecting = false;
+
+  redirectList: string[] = [];
+  applicationReject = false;
+
+  templates = config.mailTemplates;
 
   branchController = new FormGroup({
     ReferenceNo: new FormControl(),
@@ -38,15 +58,18 @@ export class ViewComponent implements OnInit, OnDestroy {
     ProcessedBy: new FormControl(),
   });
 
-  commentController = new FormGroup({
+  discrepancyController = new FormGroup({
+    id: new FormControl(shortid.generate()),
+    to: new FormControl(),
     from: new FormControl(),
-    comment: new FormControl(),
-    date: new FormControl(),
+    message: new FormControl(),
+    status: new FormControl("pending")
   });
 
   constructor(
-    private readonly userService: UserService,
     private readonly RemittanceApplicationService: ApplicationsService,
+    private readonly mailService: MailService,
+    private readonly customerService: CustomerService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
     private readonly alerts: TuiAlertService) {
@@ -68,6 +91,24 @@ export class ViewComponent implements OnInit, OnDestroy {
         this.router.navigate(['/portal', 'dashboard']);
       }
 
+      this.customerService.getByAccountNo(this.application.remitter.account).subscribe(list => {
+        if (list.length > 0) {
+          this.customer = list[0];
+
+          if (this.user.role == 'checker') {
+            if (this.customer?.balance > this.application.amount) {
+              this.operateController.get('BalanceVerified').setValue(true);
+              this.alerts.open("Account have enough Balance to perform this transaction", { label: "Balance Check Auto Performed", status: 'success' }).subscribe();
+              this.applicationReject = false;
+            } else {
+              this.operateController.get('BalanceVerified').setValue(false);
+              this.alerts.open("Account have not enough Balance to perform this transaction", { label: "Balance Check Auto Performed", status: 'error' }).subscribe();
+              this.applicationReject = true;
+            }
+          }
+        }
+      })
+
       if (!this.application.teller && this.user.role == 'teller') {
         this.branchController.get('ReferenceNo').setValue(this.application.uuid);
         this.branchController.get('ChecksPerformedBy').setValue(this.user.name);
@@ -83,58 +124,101 @@ export class ViewComponent implements OnInit, OnDestroy {
       }
 
       if (this.user.role == 'checker') {
+        this.redirectList = ["customer", "branch"]
+
         this.operateController.get('ProcessedBy').setValue(this.user.name);
-        if (this.application.amount < 3000) this.operateController.get('Method').setValue("ACH");
-        else this.operateController.get('Method').setValue("RTGS");
+
+        this.discrepancyController.get('from').setValue("operations");
+
+        if (this.application.amount < 3000) {
+          this.operateController.get('Method').setValue("ACH");
+          this.alerts.open("On Bases on Amount 'ACH' is selected", { label: "Payment Check Auto Performed", status: 'success' }).subscribe();
+        }
+        else {
+          this.operateController.get('Method').setValue("RTGS");
+          this.alerts.open("On Bases on Amount 'RTGS' is selected", { label: "Payment Check Auto Performed", status: 'success' }).subscribe();
+        }
 
         if (!this.application.step.find(el => el === "Central Operations Viewed Form")) {
           this.application.step.push("Central Operations Viewed Form");
           this.application.updatedOn = new Date().toISOString(),
-          this.RemittanceApplicationService.updateById(this.ID, this.application).subscribe();
+            this.RemittanceApplicationService.updateById(this.ID, this.application).subscribe();
         }
       } else {
+        this.redirectList = ["customer"]
+        this.discrepancyController.get('from').setValue("branch");
+        this.discrepancy = this.application.Discrepancy.filter(el => el.to === "branch" && el.status === "pending").reverse()[0];
+
         if (!this.application.step.find(el => el === "Branch Teller Viewed Form")) {
           this.application.step.push("Branch Teller Viewed Form");
           this.application.updatedOn = new Date().toISOString(),
-          this.RemittanceApplicationService.updateById(this.ID, this.application).subscribe();
+            this.RemittanceApplicationService.updateById(this.ID, this.application).subscribe();
         }
       };
     });
   }
 
   ngOnDestroy(): void {
-    this.application.isNew = false;
+    if (!this.redirecting) this.application.isNew = false;
     this.RemittanceApplicationService.updateById(this.ID, this.application).subscribe();
+  }
+
+  onBalanceCheckChanged(value: boolean) {
+    this.applicationReject = !value;
+  }
+
+  returnTo() {
+    const value = this.discrepancyController.value as unknown as Discrepancy;
+    let step;
+
+    switch (value.to) {
+      case 'branch':
+        this.application.stage = 'branch';
+        this.application.statue = STATUS.returned;
+        step = 'Redirecting back to branch';
+
+        this.redirecting = true
+        break;
+      case 'customer':
+        this.application.stage = 'customer';
+        this.application.statue = STATUS.returned;
+        step = 'Redirecting back to customer';
+
+        this.redirecting = true
+        break;
+    }
+
+    this.application.Discrepancy.push(value);
+    this.application.isNew = true;
+    this.application.step.push(step);
+    this.application.updatedOn = new Date().toISOString();
+
+    this.RemittanceApplicationService.updateById(this.ID, this.application).subscribe((res) => {
+      this.alerts.open(step, { label: "Form Notification", status: 'success' }).subscribe();
+      this.router.navigate(['/portal', 'dashboard']);
+    });
   }
 
   submittedByBranch() {
     let value: any = this.branchController.value;
 
     value = this.branchController.value;
-    value = { ...value, Date: new Date(value.Date.toString()).toISOString() }
+    value = { ...value, Date: value.Date.toString().split(".").reverse().join("-") }
 
     this.application.teller = value;
     this.application.stage = 'operations';
     this.application.step.push('Application Verified by Branch');
     this.application.step.push('Redirecting to Central Ops');
     this.application.isNew = true;
-    this.application.updatedOn = new Date().toISOString(),
+    this.application.updatedOn = new Date().toISOString();
+    this.redirecting = true;
+
+    if (this.discrepancy) {
+      this.discrepancy.status = "resolved";
+    }
 
     this.RemittanceApplicationService.updateById(this.ID, this.application).subscribe((res) => {
       this.alerts.open("Redirected To Operations", { label: "Form Notification", status: 'success' }).subscribe();
-      this.router.navigate(['/portal', 'dashboard']);
-    });
-  }
-
-  returnBank() {
-    this.application.stage = 'branch';
-    this.application.statue = 'returned';
-    this.application.step.push('Redirecting back to branch');
-    this.application.isNew = true;
-    this.application.updatedOn = new Date().toISOString(),
-
-    this.RemittanceApplicationService.updateById(this.ID, this.application).subscribe((res) => {
-      this.alerts.open("Redirected Back to Originator", { label: "Form Notification", status: 'success' }).subscribe();
       this.router.navigate(['/portal', 'dashboard']);
     });
   }
@@ -143,32 +227,59 @@ export class ViewComponent implements OnInit, OnDestroy {
     let value = this.operateController.value as Operations;
 
     this.application.Operations = value;
-    this.application.statue = 'approved';
+    this.application.statue = STATUS.approved;
     this.application.step.push("Application Approved");
     this.application.isNew = true;
-    this.application.updatedOn = new Date().toISOString(),
+    this.application.updatedOn = new Date().toISOString();
 
     this.RemittanceApplicationService.updateById(this.ID, this.application).subscribe((res) => {
       this.alerts.open("Application Successfully Approved", { label: "Form Notification", status: 'success' }).subscribe();
       this.router.navigate(['/portal', 'dashboard']);
     });
+
+    const htmlTemplate = this.templates.approved;
+    const html = htmlTemplate.replace("[Customers Name]", this.customer.accountName).replace("[Reference Number]", this.UUID);
+
+    const mailBody: MailModel = {
+      name: "Bank Nizwa",
+      to: this.customer.email,
+      subject: "Notification: Approval of Your Remittance Application",
+      html
+    }
+
+    this.mailService.sendMail(mailBody).subscribe(res => {
+      console.log(res);
+      this.alerts.open(`Successfully Sent to ${this.customer.email}`, { label: "Email Notification", status: 'success' }).subscribe();
+    });
   }
 
-  prepareCommentTime(date: number){
+  prepareCommentTime(date: number) {
     return formatDistance(date, Date.now())
   }
 
-  comment() {
-    const value = this.commentController.value as unknown as Comment;
-    value.from = `${this.user.name}-${this.user.role}`;
-    value.date = Date.now();
-
-    this.application.comments.push(value)
-    this.application.updatedOn = new Date().toISOString(),
+  reject() {
+    this.application.stage = 'customer';
+    this.application.statue = STATUS.rejected;
+    this.application.updatedOn = new Date().toISOString();
 
     this.RemittanceApplicationService.updateById(this.ID, this.application).subscribe((res) => {
-      this.alerts.open("Comment Added Successfully", { label: "Form Notification", status: 'success' }).subscribe();
-      this.commentController.reset();
+      this.alerts.open("Application Rejected", { label: "Form Notification", status: 'error' }).subscribe();
+      this.router.navigate(['/portal', 'dashboard']);
+    });
+
+    const htmlTemplate = this.templates.rejected;
+    const html = htmlTemplate.replace("[Customers Name]", this.customer.accountName).replace("[Reference Number]", this.UUID);
+
+    const mailBody: MailModel = {
+      name: "Bank Nizwa",
+      to: this.customer.email,
+      subject: "Notification: Rejection of Your Remittance Application",
+      html
+    }
+
+    this.mailService.sendMail(mailBody).subscribe(res => {
+      console.log(res);
+      this.alerts.open(`Successfully Sent to ${this.customer.email}`, { label: "Email Notification", status: 'success' }).subscribe();
     });
   }
 }

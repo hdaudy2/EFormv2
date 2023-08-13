@@ -36,6 +36,23 @@
                 [value]="i">{{item}}</li>
             </ul>
           </div>
+          <div class="p-4 mb-3" style="background-color: #FCD7CB; color: #DD4C1E; border-radius: 20px;"
+            *ngIf="discrepancy">
+            <div class="row">
+              <div class="col">
+                <span class="tui-text_body-xl pb-4" style="font-weight: 600;">
+                  Discrepancy
+                </span>
+              </div>
+            </div>
+            <div class="row my-2">
+              <div class="col">
+                <span class="tui-text_body-m pb-4">
+                  {{discrepancy?.message}}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="col-9">
           <div class="details p-4 mb-5">
@@ -72,8 +89,8 @@
                 <p class="tui-text_body-xs value mx-1">{{application?.remitter?.account}}</p>
               </div>
               <div class="col-3">
-                <p class="tui-text_body-m heading m-1">Telephone</p>
-                <p class="tui-text_body-xs value mx-1">{{application?.remitter?.telephone}}</p>
+                <p class="tui-text_body-m heading m-1">Email</p>
+                <p class="tui-text_body-xs value mx-1">{{application?.remitter?.email}}</p>
               </div>
               <div class="col-3">
                 <p class="tui-text_body-m heading m-1">Mobile</p>
@@ -97,8 +114,8 @@
                 <p class="tui-text_body-xs value mx-1">{{application?.beneficiary?.dob | date: 'dd/MM/yyyy'}}</p>
               </div>
               <div class="col-3">
-                <p class="tui-text_body-m heading m-1">Account Title</p>
-                <p class="tui-text_body-xs value mx-1">{{application?.beneficiary?.title}}</p>
+                <p class="tui-text_body-m heading m-1">Account No</p>
+                <p class="tui-text_body-xs value mx-1">{{application?.beneficiary?.account}}</p>
               </div>
               <div class="col-3">
                 <p class="tui-text_body-m heading m-1">IBAN</p>
@@ -151,7 +168,8 @@
             <div class="row">
               <div class="col-3">
                 <p class="tui-text_body-m heading m-1">Amount</p>
-                <p class="tui-text_body-xs value mx-1">{{application?.amount}}</p>
+                <p class="tui-text_body-xs value mx-1"><tui-money [currency]="'OMR'"
+                  [value]="application?.amount"></tui-money></p>
               </div>
               <div class="col-3">
                 <p class="tui-text_body-m heading m-1">Amount In Figure</p>
@@ -159,8 +177,7 @@
               </div>
               <div class="col-3">
                 <p class="tui-text_body-m heading m-1">Currency</p>
-                <p class="tui-text_body-xs value mx-1"><tui-money [currency]="null"
-                    [value]="+application?.currency"></tui-money></p>
+                <p class="tui-text_body-xs value mx-1">{{application?.currency}}</p>
               </div>
             </div>
             <div class="row">
@@ -199,7 +216,7 @@
               </div>
             </div>
             <br>
-            <form [formGroup]="branchController" (ngSubmit)="submittedByBranch()">
+            <form [formGroup]="branchController">
               <div class="row">
                 <div class="col-4">
                   <tui-input formControlName="ReferenceNo" [readOnly]="true">
@@ -241,7 +258,7 @@
               </div>
               <div class="row mt-5" *ngIf="user.role === 'teller'">
                 <div class="col-2">
-                  <button tuiButton appearance="secondary">Submit</button>
+                  <button tuiButton appearance="secondary" (click)="submittedByBranch()">Submit</button>
                 </div>
               </div>
             </form>
@@ -258,16 +275,17 @@
                 <div class="row">
                   <div class="col-3">
                     <p class="tui-text_body-m heading m-1">Current Balance</p>
-                    <p class="tui-text_body-xs value mx-1"><tui-money [currency]="null" [value]="10728.9"></tui-money>
+                    <p class="tui-text_body-xs value mx-1"><tui-money [currency]="'OMR'"
+                        [value]="+customer?.balance"></tui-money>
                     </p>
                   </div>
                   <div class="col-3">
                     <p class="tui-text_body-m heading m-1">Account Tile</p>
-                    <p class="tui-text_body-xs value mx-1">{{application?.remitter?.title}}</p>
+                    <p class="tui-text_body-xs value mx-1">{{customer?.accountName}}</p>
                   </div>
                   <div class="col-3">
                     <p class="tui-text_body-m heading m-1">Account No.</p>
-                    <p class="tui-text_body-xs value mx-1">{{application?.remitter?.account}}</p>
+                    <p class="tui-text_body-xs value mx-1">{{customer?.accountNo}}</p>
                   </div>
                 </div>
               </div>
@@ -293,7 +311,7 @@
                   </div>
                   <div class="col-6">
                     <tui-checkbox-block formControlName="BalanceVerified" contentAlign="left" nativeId="example3"
-                      size="l">
+                      size="l" (ngModelChange)="onBalanceCheckChanged($event)">
                       <div class="inner inner_flex">
                         Balance Verified
                         <tui-tooltip direction="right"
@@ -313,10 +331,11 @@
                 </div>
                 <div class="row mt-5">
                   <div class="col-2">
-                    <button tuiButton appearance="secondary" (click)="submittedByOperations()">Submit</button>
+                    <button tuiButton appearance="secondary" (click)="submittedByOperations()"
+                      [disabled]="applicationReject">Submit</button>
                   </div>
                   <div class="col-3">
-                    <button tuiButton appearance="secondary-destructive" (click)="returnBank()">Send Bank</button>
+                    <button tuiButton appearance="secondary-destructive" (click)="reject()">Reject</button>
                   </div>
                 </div>
               </div>
@@ -325,52 +344,40 @@
           <div class="details p-4 mb-5">
             <div class="d-flex justify-content-between">
               <div class="col-2">
-                <p class="tui-text_h6 heading" style="letter-spacing: 1.5px;">Comments</p>
+                <p class="tui-text_h6 heading" style="letter-spacing: 1.5px;">Discrepancies</p>
               </div>
             </div>
             <br>
-            <form [formGroup]="commentController" (ngSubmit)="comment()">
+            <form [formGroup]="discrepancyController" (ngSubmit)="returnTo()">
               <div>
                 <div class="row">
                   <div class="col">
-                    <tui-textarea formControlName="comment">
-                      Drop your comment
-                    </tui-textarea>
-                    <tui-error formControlName="comment" [error]="[] | tuiFieldError | async"></tui-error>
+                    <tui-select formControlName="to">
+                      Send to*
+                      <input tuiTextfield placeholder="Choose were to redirect" />
+                      <tui-data-list-wrapper *tuiDataList [items]="redirectList"></tui-data-list-wrapper>
+                    </tui-select>
+                    <tui-error formControlName="to" [error]="[] | tuiFieldError | async"></tui-error>
                   </div>
                 </div>
                 <br>
                 <div class="row">
                   <div class="col">
-                    <button tuiButton appearance="secondary" size="m">Post</button>
+                    <tui-textarea formControlName="message">
+                      Drop your comment
+                    </tui-textarea>
+                    <tui-error formControlName="message" [error]="[] | tuiFieldError | async"></tui-error>
+                  </div>
+                </div>
+                <br>
+                <div class="row">
+                  <div class="col">
+                    <button tuiButton appearance="secondary-destructive">Redirect</button>
+                    <!-- <button tuiButton appearance="secondary" size="m">Post</button> -->
                   </div>
                 </div>
               </div>
             </form>
-            <hr>
-            <div *ngIf="this.application?.comments?.length > 0">
-              <div class="mb-4" *ngFor="let list of this.application?.comments.reverse()">
-                <div class="row">
-                  <div class="col-1">
-                    <tui-avatar [text]="list.from" size="m" class="tui-space_top-1" [rounded]="true"></tui-avatar>
-                  </div>
-                  <div class="col-8 d-flex align-items-center">
-                    <span class="tui-text_body-l">{{list.from}}</span>
-                  </div>
-                  <div class="col-3  d-flex align-items-center justify-content-end">
-                    <span class="tui-text_body-m">{{ prepareCommentTime(list.date) }} ago</span>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-11 offset-1">
-                    <span class="tui-text_body-m" style="color: var(--tui-text-03);">{{list.comment}}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div *ngIf="this.application?.comments?.length == 0">
-              <p class="tui-text_body-l">No comment yet...</p>
-            </div>
           </div>
         </div>
       </div>
