@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 
-import { TuiErrorModule, TuiFormatNumberPipeModule, TuiGroupModule, TuiTooltipModule, TuiButtonModule, TuiLinkModule, TuiDataListModule, TuiFormatDatePipeModule, TuiTextfieldControllerModule, } from '@taiga-ui/core';
-import { TuiFieldErrorPipeModule, TuiIslandModule, TuiCarouselModule, TuiInputModule, TuiInputNumberModule, TuiTextareaModule, TuiInputPasswordModule, TuiCheckboxBlockModule, TuiRadioBlockModule, TuiCheckboxLabeledModule, TuiInputDateModule, TuiTagModule, TuiDataListWrapperModule,  TuiSelectModule, TuiAvatarModule } from '@taiga-ui/kit';
+import { TuiErrorModule, TuiFormatNumberPipeModule, TuiSvgModule, TuiGroupModule, TuiTooltipModule, TuiButtonModule, TuiLinkModule, TuiDataListModule, TuiFormatDatePipeModule, TuiTextfieldControllerModule, } from '@taiga-ui/core';
+import { TuiFieldErrorPipeModule, TuiIslandModule, TuiCarouselModule, TuiInputModule, TuiInputNumberModule, TuiInputFilesModule, TuiTextareaModule, TuiInputPasswordModule, TuiCheckboxBlockModule, TuiRadioBlockModule, TuiCheckboxLabeledModule, TuiInputDateModule, TuiTagModule, TuiDataListWrapperModule,  TuiSelectModule, TuiAvatarModule } from '@taiga-ui/kit';
 import { TuiTableModule, TuiTablePaginationModule } from '@taiga-ui/addon-table';
 import { TuiCurrencyPipeModule, TuiMoneyModule } from '@taiga-ui/addon-commerce';
 
@@ -27,6 +27,7 @@ import { NewComponent } from './pages/new/new.component';
     ReactiveFormsModule,
     // Taiga UI Core
     TuiErrorModule,
+    TuiSvgModule,
     TuiGroupModule,
     TuiButtonModule,
     TuiLinkModule,
@@ -49,6 +50,7 @@ import { NewComponent } from './pages/new/new.component';
     TuiSelectModule,
     TuiDataListWrapperModule,
     TuiAvatarModule,
+    TuiInputFilesModule,
     // Taiga Addons
     TuiTableModule,
     TuiTablePaginationModule,

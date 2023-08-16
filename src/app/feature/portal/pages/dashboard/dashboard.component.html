@@ -9,10 +9,10 @@
             Welcome Back, {{user.name}}
           </h1>
           <p class="tui-text_body-m px-2">
-            <span *ngIf="user.role === 'teller'">
+            <span *ngIf="user.role === ROLE.Branch">
               Branch No. 09 |
             </span>
-            Role: {{user.role | uppercase}}
+            Role: {{customerRole | uppercase}}
           </p>
         </div>
         <div class="col" style="display: flex; justify-content: end;">
@@ -22,15 +22,19 @@
       <br>
       <br>
       <div class="d-flex justify-content-between">
-        <div class="col-2" *ngIf="user.role === 'teller'">
+        <div class="col-2" *ngIf="user.role === ROLE.Branch">
           <button tuiButton appearance="primary" size="s" class="m-1" (click)="newApplication()">New
             Application</button>
         </div>
         <div class="col-9">
-          <button tuiButton appearance="secondary" size="s" class="m-1" (click)="onStatueChange('pending')"
+          <button tuiButton appearance="secondary" size="s" class="m-1" (click)="onStatueChange(STATUS.pending)"
             [disabled]="filter.status == 'pending'">New Submissions</button>
-          <button tuiButton appearance="secondary" size="s" class="m-1" (click)="onStatueChange('returned')"
-            [disabled]="filter.status == 'returned'">Redirected Bank</button>
+          <button tuiButton appearance="secondary" size="s" class="m-1" (click)="onStatueChange(STATUS.returned)"
+            [disabled]="filter.status == 'returned'">Redirected Back</button>
+          <button tuiButton appearance="secondary" size="s" class="m-1" (click)="onStatueChange(STATUS.approved)"
+            [disabled]="filter.status == 'approved'">Approved</button>
+          <button tuiButton appearance="secondary" size="s" class="m-1" (click)="onStatueChange(STATUS.rejected)"
+            [disabled]="filter.status == 'rejected'">Rejected</button>
         </div>
         <div class="col-1">
           <button tuiButton appearance="secondary-destructive" icon="tuiIconPower" size="s"
@@ -83,7 +87,7 @@
               </td>
               <td *tuiCell="'status'" tuiTd>
                 <tui-tag status="custom"
-                  [ngClass]="{'tag-pending': filter.status == 'pending', 'tag-returned': filter.status == 'returned'}"
+                  [ngClass]="{'tag-initialized': item.status == 'initialized', 'tag-pending': item.status == 'pending', 'tag-returned': item.status == 'returned', 'tag-rejected': item.status == 'rejected', 'tag-approved': item.status == 'approved'}"
                   [hoverable]="true" [value]="item.status"></tui-tag>
               </td>
               <td *tuiCell="'date'" tuiTd>

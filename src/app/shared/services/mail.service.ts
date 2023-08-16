@@ -15,13 +15,11 @@ export class MailService {
 
   sendMail(body: MailModel) {
     const URL = `${this.endpoint}`;
-    console.log(URL);
     return this.http.post<any>(URL, body);
   }
 
   createAndSendPdfMail(body: MailModel) {
     const URL = `${this.endpoint}/pdf`;
-    console.log(URL);
     return this.http.post<any>(URL, body);
   }
 }

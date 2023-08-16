@@ -1,3 +1,5 @@
+import { ROLE } from "./userModel.interface";
+
 interface Branch {
   no: string;
   name: string;
@@ -48,17 +50,11 @@ export interface Operations {
   ProcessedBy: string;
 }
 
-// export interface Comment {
-//   comment: string;
-//   from: string;
-//   date: number;
-// }
-
 export interface Discrepancy {
   id: string;
   message: string;
-  to: "customer" | "branch";
-  from: "branch" | "operations";
+  to: ROLE;
+  from: ROLE;
   status: "pending" | "resolved"
 }
 
@@ -77,10 +73,11 @@ export interface RemittanceModel {
   Purpose: string;
   detail: string;
   isNew: boolean;
+  exchange?: number;
   step?: string[];
   // comments?: Comment[];
   Discrepancy?: Discrepancy[];
-  stage: 'customer' | 'branch' | 'operations';
+  stage: ROLE;
   statue: STATUS;
   createdOn: string;
   updatedOn: string;

@@ -1,14 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { UserModel } from '@model/userModel.interface';
+import { STATUS } from '@model/RemittanceModel.interface';
+import { ROLE, UserModel } from '@model/userModel.interface';
 import { ApplicationsService } from '@service/applications.service';
 import { UserService } from '@service/users.service';
 import { TuiAlertService } from '@taiga-ui/core';
 import Cookies from 'js-cookie';
 
 interface Filter {
-  stage: 'branch' | 'operations';
-  status: 'pending' | 'approved' | 'returned' | 'rejected';
+  stage: ROLE;
+  status: STATUS;
 }
 
 @Component({
@@ -19,6 +20,10 @@ interface Filter {
 export class DashboardComponent implements OnInit {
   user: UserModel;
   subTitle;
+
+  ROLE = ROLE;
+  STATUS = STATUS;
+  customerRole: string;
 
   // ApplicationOptions
   fetchNew: true;
@@ -43,17 +48,31 @@ export class DashboardComponent implements OnInit {
     if (!this.user) this.router.navigate(['/portal']);
     this.user = JSON.parse(Cookies.get('auth'));
 
-    if (this.user.role === "teller") {
-      this.filter = {
-        stage: 'branch',
-        status: 'pending'
-      }
-    }
-    if (this.user.role === "checker") {
-      this.filter = {
-        stage: 'operations',
-        status: 'pending'
-      }
+    switch (this.user.role) {
+      case ROLE.Branch:
+        this.filter = {
+          stage: ROLE.Branch,
+          status: STATUS.pending
+        }
+
+        this.customerRole = "Branch"
+        break;
+      case ROLE.OP:
+        this.filter = {
+          stage: ROLE.OP,
+          status: STATUS.pending
+        }
+
+        this.customerRole = "Operations"
+        break;
+      case ROLE.Approver:
+        this.filter = {
+          stage: ROLE.Approver,
+          status: STATUS.pending
+        }
+
+        this.customerRole = "Approver"
+        break;
     }
 
     this.RemittanceApplicationService.getAll().subscribe(applications => {
@@ -108,7 +127,7 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/portal', 'new']);
   }
 
-  onStatueChange(status: 'pending' | 'approved' | 'returned' | 'rejected') {
+  onStatueChange(status: STATUS) {
     this.filter.status = status;
     this.prepareData();
   }

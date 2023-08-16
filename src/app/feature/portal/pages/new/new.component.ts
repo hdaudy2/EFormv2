@@ -2,69 +2,77 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 
-import { TuiDay } from '@taiga-ui/cdk';
+import { TUI_DATE_FORMAT, TUI_DATE_SEPARATOR, TuiDay } from '@taiga-ui/cdk';
 import { TuiAlertService } from '@taiga-ui/core';
+import { TuiFileLike, tuiInputNumberOptionsProvider } from '@taiga-ui/kit';
+import { Observable, of, Subject, timer } from 'rxjs';
+import { finalize, map, switchMap } from 'rxjs/operators';
+
+import Cookies from 'js-cookie';
 
 import { ApplicationsService } from '@service/applications.service';
 
 import { RemittanceModel, STATUS } from '@model/RemittanceModel.interface';
+import { ROLE, UserModel } from '@model/userModel.interface';
 
 @Component({
   selector: 'app-new',
   templateUrl: './new.component.html',
-  styleUrls: ['./new.component.css']
+  styleUrls: ['./new.component.css'],
+  providers: [
+    { provide: TUI_DATE_FORMAT, useValue: 'YMD' },
+    { provide: TUI_DATE_SEPARATOR, useValue: '/' },
+    tuiInputNumberOptionsProvider({
+      decimal: 'always',
+      step: 0.1,
+    }),
+  ],
 })
 export class NewComponent {
   UUID: string;
   application: RemittanceModel;
   ID: number;
+  user: UserModel;
 
-  codeType = ["FEDWIRE", "SORTCODE", "CHIPS", "IFCS(India)", "BSB (AUS)", "ABA", "BLZ", "TRANSIT"];
-  currencies = ["PKR", "AED", "USD", "GBP", "EURO", "CAD", "OMR"];
-  purposes = ["Personal Transfer", "Salary", "Loan Payment", "Card Payment", "Invoice Payment", "Other"];
+  ROLE = ROLE;
 
-  selectedCurrency = "";
+  date = new Date();
+  dateArr: [number, number, number] = [this.date.getFullYear(), this.date.getMonth(), this.date.getDate()];
+
+  formController = new FormGroup({
+    ReferenceNo: new FormControl(),
+    ChecksPerformedBy: new FormControl(),
+    StaffID: new FormControl(),
+    Date: new FormControl(new TuiDay(...this.dateArr)),
+    signature: new FormControl(),
+    exchangeRate: new FormControl(),
+    charges: new FormControl(),
+  });
 
   constructor(
     private readonly RemittanceApplicationService: ApplicationsService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
     private readonly alerts: TuiAlertService
-  ) { }
+  ) {
+    this.user = Cookies.get('auth');
+    if (!this.user) this.router.navigate(['/portal']);
+    this.user = JSON.parse(Cookies.get('auth'));
+
+    this.formController.get('ChecksPerformedBy').setValue(this.user.name);
+    this.formController.get('StaffID').setValue(this.user.staffID.toString());
+  }
+
   readonly searchController = new FormGroup({
     UUID: new FormControl("", [Validators.required]),
   });
 
-  readonly formController = new FormGroup({
-    UUID: new FormControl(),
-    Date: new FormControl(),
-    BranchNo: new FormControl(),
-    BranchName: new FormControl(),
-    RemittingAccountName: new FormControl(),
-    RemittingAccountNo: new FormControl(),
-    Email: new FormControl(),
-    MobileNo: new FormControl(),
-    BeneficiaryName: new FormControl(),
-    BeneficiaryAddress: new FormControl(),
-    BeneficiaryDOB: new FormControl(),
-    BeneficiaryAccountNumber: new FormControl(),
-    BeneficiaryIBANNo: new FormControl(),
-    BeneficiaryBankName: new FormControl(),
-    BeneficiaryBankCode: new FormControl(),
-    BeneficiaryBankCodeType: new FormControl(),
-    BeneficiaryBankSwiftCode: new FormControl(),
-    BeneficiaryBankAddress: new FormControl(),
-    Currency: new FormControl(),
-    Amount: new FormControl(),
-    AmountInWord: new FormControl(),
-    Purpose: new FormControl(),
-    DetailsOfPayment: new FormControl(),
-    accept: new FormControl(false),
-  });
+  readonly signature = new FormControl();
 
   onSearch = () => {
     const value = this.searchController.value;
     this.UUID = value.UUID;
+    this.formController.get('ReferenceNo').setValue(this.UUID);
 
     this.RemittanceApplicationService.Search(this.UUID).subscribe(application => {
       if (application.length == 0) {
@@ -76,53 +84,57 @@ export class NewComponent {
 
       this.application = application[0];
       this.ID = application[0].id;
-
-      const date = new Date(this.application.date);
-      const dateArr: [number, number, number] = [date.getFullYear(), date.getMonth(), date.getDate()];
-
-      const dob = new Date(this.application.beneficiary.dob);
-      const dobDateArr: [number, number, number] = [dob.getFullYear(), dob.getMonth(), dob.getDate()];
-
-      this.formController.get('UUID').setValue(this.application.uuid);
-      this.formController.get('Date').setValue(new TuiDay(...dateArr));
-
-      this.formController.get('BranchNo').setValue(this.application.branch.no);
-      this.formController.get('BranchName').setValue(this.application.branch.name);
-
-      this.formController.get('RemittingAccountName').setValue(this.application.remitter.title);
-      this.formController.get('RemittingAccountNo').setValue(this.application.remitter.account);
-      this.formController.get('Email').setValue(this.application.remitter.email);
-      this.formController.get('MobileNo').setValue(this.application.remitter.mobile);
-
-      this.formController.get('BeneficiaryName').setValue(this.application.beneficiary.name);
-      this.formController.get('BeneficiaryAddress').setValue(this.application.beneficiary.address);
-      this.formController.get('BeneficiaryDOB').setValue(new TuiDay(...dobDateArr));
-      this.formController.get('BeneficiaryAccountNumber').setValue(this.application.beneficiary.account);
-      this.formController.get('BeneficiaryIBANNo').setValue(this.application.beneficiary.iban);
-
-      this.formController.get('BeneficiaryBankName').setValue(this.application.beneficiary.bank.name);
-      this.formController.get('BeneficiaryBankCode').setValue(this.application.beneficiary.bank.code);
-      this.formController.get('BeneficiaryBankCodeType').setValue(this.application.beneficiary.bank.codeType);
-      this.formController.get('BeneficiaryBankSwiftCode').setValue(this.application.beneficiary.bank.swift);
-      this.formController.get('BeneficiaryBankAddress').setValue(this.application.beneficiary.bank.address);
-
-      this.formController.get('Currency').setValue(this.application.currency);
-      this.formController.get('Amount').setValue(this.application.amount.toString());
-      this.formController.get('AmountInWord').setValue(this.application.figure);
-      this.formController.get('Purpose').setValue(this.application.Purpose);
-      this.formController.get('DetailsOfPayment').setValue(this.application.detail);
     });
   }
 
   // onCurrencyChange = (currency) => this.selectedCurrency = `${currency} `;
 
   onSubmit = () => {
-    this.application.stage = "branch";
+    this.application.exchange = +this.formController.get('exchangeRate').value;
+    this.application.stage = ROLE.Branch;
     this.application.statue = STATUS.pending;
+    this.application.updatedOn = new Date().toISOString();
 
     this.RemittanceApplicationService.updateById(this.ID, this.application).subscribe(() => {
       this.alerts.open(`Successfully Initialized Remittance Application`, { label: "Success", status: 'success' }).subscribe();
       this.router.navigate(['/portal', 'dashboard']);
     });
+  }
+
+  readonly rejectedFiles$ = new Subject<TuiFileLike | null>();
+  readonly loadingFiles$ = new Subject<TuiFileLike | null>();
+  readonly loadedFiles$ = this.signature.valueChanges.pipe(
+    switchMap(file => (file ? this.makeRequest(file) : of(null))),
+  );
+
+  onReject(file: TuiFileLike | readonly TuiFileLike[]): void {
+    this.rejectedFiles$.next(file as TuiFileLike);
+  }
+
+  removeFile(): void {
+    this.signature.setValue(null);
+  }
+
+  clearRejected(): void {
+    this.removeFile();
+    this.rejectedFiles$.next(null);
+  }
+
+  makeRequest(file: TuiFileLike): Observable<TuiFileLike | null> {
+    this.loadingFiles$.next(file);
+
+    return timer(1000).pipe(
+      map(() => {
+        // if (Math.random() > 0.5) {
+        //   return file;
+        // }
+
+        // this.rejectedFiles$.next(file);
+
+        // return null;
+        return file;
+      }),
+      finalize(() => this.loadingFiles$.next(null)),
+    );
   }
 }

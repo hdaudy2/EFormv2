@@ -15,6 +15,7 @@ import { MailService } from '@service/mail.service';
 import { MailModel } from '@model/mailModel.interface';
 
 import * as settings from '@setting/config.json';
+import { ROLE } from '@model/userModel.interface';
 
 const config = settings;
 @Component({
@@ -94,7 +95,7 @@ export class FormComponent implements OnInit {
           this.formController.get('Purpose').setValue(this.application.Purpose);
           this.formController.get('DetailsOfPayment').setValue(this.application.detail);
 
-          this.discrepancy = this.application.Discrepancy.filter(el => el.to === "customer" && el.status === "pending").reverse()[0];
+          this.discrepancy = this.application.Discrepancy.filter(el => el.to === ROLE.Customer && el.status === STATUS.pending).reverse()[0];
         } else {
           this.alerts.open(`No Record Found By UUID: ${this.UUID}`, { label: "Error", status: 'error' }).subscribe();
           this.router.navigate(['/home']);
@@ -142,9 +143,6 @@ export class FormComponent implements OnInit {
     accept: new FormControl(false),
   });
 
-  // onCurrencyChange = (currency) => this.selectedCurrency = `${currency} `;
-  // onDateChange = (date) => console.log(new Date(date.toString()).toISOString());
-
   onSubmit = (): void => {
     const value: any = this.formController.value;
 
@@ -183,7 +181,7 @@ export class FormComponent implements OnInit {
       isNew: true,
       step: ["Application Submitted"],
       Discrepancy: [],
-      stage: "customer",
+      stage: ROLE.Customer,
       statue: STATUS.initialized,
       createdOn: new Date().toISOString(),
       updatedOn: new Date().toISOString(),
@@ -229,7 +227,6 @@ export class FormComponent implements OnInit {
       this.RemittanceApplicationService.insert(newRemittance).subscribe(res => {
         this.alerts.open("Successfully Added", { label: "Form Notification", status: 'success' }).subscribe();
         this.mailService.createAndSendPdfMail(mailBody).subscribe(res => {
-          console.log(res);
           this.alerts.open(`Successfully Sent to ${newRemittance.remitter.email}`, { label: "Email Notification", status: 'success' }).subscribe();
         });
       }, err => {

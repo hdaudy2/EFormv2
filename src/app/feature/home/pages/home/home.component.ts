@@ -8,6 +8,7 @@ import { ApplicationsService } from '@service/applications.service';
 
 import { CustomerModel } from '@model/CustomerModel.interface';
 import { RemittanceModel, STATUS } from '@model/RemittanceModel.interface';
+import { ROLE } from '@model/userModel.interface';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
@@ -19,7 +20,7 @@ export class HomeComponent implements OnInit {
   // Table
   applicationList = [];
   selectedList = [];
-  columns = ['no', 'name', 'iban', 'amount', 'currency', 'status', 'date', 'uuid'];
+  columns = ['no', 'reference', 'name', 'iban', 'amount', 'currency', 'status', 'date', 'uuid'];
   total = 0;
   page = 0;
   size = 10;
@@ -32,17 +33,16 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
     this.customer = JSON.parse(Cookies.get('customer'));
     this.RemittanceApplicationService.getAllCustomerSubmissions(this.customer?.accountNo).subscribe(list => {
-      console.log(list);
-
       this.applicationList = list.map((el, index) => {
         let isEditable = true;
-        if(el.stage === 'customer'){
-          const Discrepancy = el?.Discrepancy.filter(el => el.to === "customer" && el.status === "pending").reverse()[0];
-          if(Discrepancy || el.statue === 'initialized') isEditable = false;
+        if (el.stage === ROLE.Customer) {
+          const Discrepancy = el?.Discrepancy.filter(el => el.to === ROLE.Customer && el.status === STATUS.pending).reverse()[0];
+          if (Discrepancy || el.statue === 'initialized') isEditable = false;
         }
 
         return {
           no: index + 1,
+          reference: el.uuid,
           name: el.beneficiary.name,
           iban: el.beneficiary.iban,
           amount: el.amount,
@@ -88,7 +88,6 @@ export class HomeComponent implements OnInit {
 
   view(uuid: string) {
     this.router.navigate(['/form-remittance', uuid]);
-    console.log(uuid);
   }
 
   onPage(page: number) {

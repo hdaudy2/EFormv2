@@ -162,14 +162,19 @@
             <hr>
             <div class="d-flex justify-content-between">
               <div class="col-1">
-                <p class="tui-text_h6" style="letter-spacing: 1.5px;">Other Details</p>
+                <p class="tui-text_h6" style="letter-spacing: 1.5px;">Remittance Details</p>
               </div>
             </div>
             <div class="row">
               <div class="col-3">
                 <p class="tui-text_body-m heading m-1">Amount</p>
-                <p class="tui-text_body-xs value mx-1"><tui-money [currency]="'OMR'"
-                  [value]="application?.amount"></tui-money></p>
+                <p class="tui-text_body-xs value mx-1">
+                  <tui-money [currency]="application?.currency" [value]="application?.amount"></tui-money>
+                  <span *ngIf="application?.exchange">
+                    <tui-svg src="tuiIconArrowRight"></tui-svg>
+                    <tui-money [currency]="'OMR'" [value]="+application?.amount / +application?.exchange"></tui-money>
+                  </span>
+                </p>
               </div>
               <div class="col-3">
                 <p class="tui-text_body-m heading m-1">Amount In Figure</p>
@@ -241,13 +246,13 @@
               <div class="row">
                 <div class="col-4">
                   <tui-input-date tuiUnfinishedValidator="Finish filling the field" formControlName="Date"
-                    [readOnly]="!!application.teller && user.role === 'checker'">
+                    [readOnly]="!!application.teller && user.role === ROLE.OP || user.role === ROLE.Approver">
                     Choose a date
                   </tui-input-date>
                 </div>
                 <div class="col-4">
                   <tui-checkbox-block formControlName="SignatureVerified" contentAlign="left" size="l"
-                    [readOnly]="!!application.teller && user.role === 'checker'">
+                    [readOnly]="!!application.teller && user.role === ROLE.OP || user.role === ROLE.Approver">
                     <div class="inner inner_flex">
                       Signature Verified
                       <tui-tooltip direction="right"
@@ -256,14 +261,14 @@
                   </tui-checkbox-block>
                 </div>
               </div>
-              <div class="row mt-5" *ngIf="user.role === 'teller'">
+              <div class="row mt-5" *ngIf="user.role === ROLE.Branch">
                 <div class="col-2">
                   <button tuiButton appearance="secondary" (click)="submittedByBranch()">Submit</button>
                 </div>
               </div>
             </form>
           </div>
-          <div *ngIf="user.role === 'checker'" class="mb-5">
+          <div *ngIf="user.role === ROLE.OP || user.role === ROLE.Approver" class="mb-5">
             <form [formGroup]="operateController">
               <div class="details p-4 mb-5">
                 <div class="d-flex justify-content-between">
@@ -300,18 +305,20 @@
                   <div class="col-4">
                     <div tuiGroup class="group" [collapsed]="true">
                       <tui-radio-block formControlName="Method" class="control" contentAlign="right" size="l" item="ACH"
-                        [hideRadio]="true">
+                        [hideRadio]="true" [readOnly]="!!application.Operations && user.role === ROLE.Approver">
                         ACH
                       </tui-radio-block>
                       <tui-radio-block formControlName="Method" class="control" contentAlign="right" size="l"
-                        item="RTGS" [hideRadio]="true">
+                        item="RTGS" [hideRadio]="true"
+                        [readOnly]="!!application.Operations && user.role === ROLE.Approver">
                         RTGS
                       </tui-radio-block>
                     </div>
                   </div>
                   <div class="col-6">
                     <tui-checkbox-block formControlName="BalanceVerified" contentAlign="left" nativeId="example3"
-                      size="l" (ngModelChange)="onBalanceCheckChanged($event)">
+                      size="l" (ngModelChange)="onBalanceCheckChanged($event)"
+                      [readOnly]="!!application.Operations && user.role === ROLE.Approver">
                       <div class="inner inner_flex">
                         Balance Verified
                         <tui-tooltip direction="right"
@@ -330,18 +337,23 @@
                   </div>
                 </div>
                 <div class="row mt-5">
-                  <div class="col-2">
+                  <div class="col-2" *ngIf="user.role === ROLE.OP">
                     <button tuiButton appearance="secondary" (click)="submittedByOperations()"
                       [disabled]="applicationReject">Submit</button>
                   </div>
-                  <div class="col-3">
-                    <button tuiButton appearance="secondary-destructive" (click)="reject()">Reject</button>
+                  <div class="col-2" *ngIf="user.role === ROLE.Approver">
+                    <button tuiButton appearance="secondary" (click)="submittedByApprover()"
+                      [disabled]="application?.statue === STATUS.approved || application?.statue === STATUS.rejected">Approve</button>
+                  </div>
+                  <div class="col-2" *ngIf="user.role === ROLE.Approver">
+                    <button tuiButton appearance="secondary-destructive" class="mx-4" (click)="reject()"
+                      [disabled]="application?.statue === STATUS.approved || application?.statue === STATUS.rejected">Reject</button>
                   </div>
                 </div>
               </div>
             </form>
           </div>
-          <div class="details p-4 mb-5">
+          <div class="details p-4 mb-2">
             <div class="d-flex justify-content-between">
               <div class="col-2">
                 <p class="tui-text_h6 heading" style="letter-spacing: 1.5px;">Discrepancies</p>
@@ -372,8 +384,8 @@
                 <br>
                 <div class="row">
                   <div class="col">
-                    <button tuiButton appearance="secondary-destructive">Redirect</button>
-                    <!-- <button tuiButton appearance="secondary" size="m">Post</button> -->
+                    <button tuiButton appearance="secondary-destructive"
+                      [disabled]="application?.statue === STATUS.approved || application?.statue === STATUS.rejected">Redirect</button>
                   </div>
                 </div>
               </div>

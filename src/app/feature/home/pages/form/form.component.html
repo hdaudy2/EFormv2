@@ -2,14 +2,19 @@
   <div class="container">
     <div class="row pb-5">
       <div class="col">
+        <img class="mx-2" src="assets/img/logo.png" alt="Bank Nizwa Logo">
+        <br>
+        <br>
         <p class="tui-text_h6 mb-3 mx-2" style="color: var(--tui-success-fill)">
-          Remittance
+          Funds Transfer Application
         </p>
         <p class="tui-text_h1">
           Send happiness back <br>
           home From Anywhere
         </p>
       </div>
+        <div class="col">
+        </div>
     </div>
     <div class="p-5 mb-5" style="background-color: #FCD7CB; color: #DD4C1E; border-radius: 20px;" *ngIf="discrepancy">
       <div class="row">
@@ -182,9 +187,7 @@
             <tui-error formControlName="Currency" [error]="[] | tuiFieldError | async"></tui-error>
           </div>
           <div class="col-3">
-            <tui-input-number
-              formControlName="Amount"
-              [tuiTextfieldPrefix]="'OMR ' | tuiCurrency">
+            <tui-input-number formControlName="Amount">
               Transfer Amount in Figures*
             </tui-input-number>
             <tui-error formControlName="Amount" [error]="[] | tuiFieldError | async"></tui-error>
