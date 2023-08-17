@@ -1,9 +1,6 @@
 .login {
-  height: 100vh;
+  height: 80vh;
   width: 100vw;
-  /* background: url('/assets/topography.svg');
-  background-size: cover;
-  Background-color: #6F298C; */
   display: flex;
   flex-direction: row;
   align-items: center;

@@ -99,7 +99,7 @@ export class ViewComponent implements OnInit, OnDestroy {
           this.customer = list[0];
 
           if (this.user.role == ROLE.OP) {
-            if (this.customer?.balance > this.application.amount) {
+            if (this.customer?.balance > this.application.amount / this.application?.exchange) {
               this.operateController.get('BalanceVerified').setValue(true);
               this.alerts.open("Account have enough Balance to perform this transaction", { label: "Balance Check Auto Performed", status: 'success' }).subscribe();
               this.applicationReject = false;

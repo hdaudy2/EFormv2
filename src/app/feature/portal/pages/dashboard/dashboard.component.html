@@ -32,9 +32,9 @@
           <button tuiButton appearance="secondary" size="s" class="m-1" (click)="onStatueChange(STATUS.returned)"
             [disabled]="filter.status == 'returned'">Redirected Back</button>
           <button tuiButton appearance="secondary" size="s" class="m-1" (click)="onStatueChange(STATUS.approved)"
-            [disabled]="filter.status == 'approved'">Approved</button>
+            [disabled]="filter.status == 'approved'" *ngIf="user.role === ROLE.Approver">Approved</button>
           <button tuiButton appearance="secondary" size="s" class="m-1" (click)="onStatueChange(STATUS.rejected)"
-            [disabled]="filter.status == 'rejected'">Rejected</button>
+            [disabled]="filter.status == 'rejected'" *ngIf="user.role === ROLE.Approver">Rejected</button>
         </div>
         <div class="col-1">
           <button tuiButton appearance="secondary-destructive" icon="tuiIconPower" size="s"
