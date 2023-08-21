@@ -13,8 +13,8 @@
           home From Anywhere
         </p>
       </div>
-        <div class="col">
-        </div>
+      <div class="col">
+      </div>
     </div>
     <div class="p-5 mb-5" style="background-color: #FCD7CB; color: #DD4C1E; border-radius: 20px;" *ngIf="discrepancy">
       <div class="row">
@@ -32,208 +32,212 @@
         </div>
       </div>
     </div>
-    <div class="p-5 mb-5" style="background-color: #fff; border-radius: 20px;">
-      <form [formGroup]="formController" (ngSubmit)="onSubmit()">
-        <div class="row">
-          <div class="col-3">
-            <tui-input-date tuiUnfinishedValidator="Finish filling the field" formControlName="Date" [readOnly]="true">
-              Choose a date*
-            </tui-input-date>
-            <tui-error formControlName="Date" [error]="[] | tuiFieldError | async"></tui-error>
+    <tui-loader [showLoader]="loader">
+      <div class="p-5 mb-5" style="background-color: #fff; border-radius: 20px;">
+        <form [formGroup]="formController" (ngSubmit)="onSubmit()">
+          <div class="row">
+            <div class="col-3">
+              <tui-input-date tuiUnfinishedValidator="Finish filling the field" formControlName="Date"
+                [readOnly]="true">
+                Choose a date*
+              </tui-input-date>
+              <tui-error formControlName="Date" [error]="[] | tuiFieldError | async"></tui-error>
+            </div>
+            <div class="col-3"></div>
+            <div class="col-3">
+              <tui-input formControlName="BranchNo" [readOnly]="!!customer || !!application ">
+                Branch No*
+              </tui-input>
+              <tui-error formControlName="BranchNo" [error]="[] | tuiFieldError | async"></tui-error>
+            </div>
+            <div class="col-3">
+              <tui-input formControlName="BranchName" [readOnly]="!!customer || !!application ">
+                Branch Name*
+              </tui-input>
+              <tui-error formControlName="BranchName" [error]="[] | tuiFieldError | async"></tui-error>
+            </div>
           </div>
-          <div class="col-3"></div>
-          <div class="col-3">
-            <tui-input formControlName="BranchNo" [readOnly]="!!customer || !!application ">
-              Branch No*
-            </tui-input>
-            <tui-error formControlName="BranchNo" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-          <div class="col-3">
-            <tui-input formControlName="BranchName" [readOnly]="!!customer || !!application ">
-              Branch Name*
-            </tui-input>
-            <tui-error formControlName="BranchName" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-        </div>
-        <div class="row mt-4 mb-2">
-          <div class="col">
-            <span class="tui-text_body-l pb-4">
-              Remitter Details*
-            </span>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-3">
-            <tui-input formControlName="RemittingAccountName" [readOnly]="!!customer || !!application ">
-              Account Name*
-            </tui-input>
-            <tui-error formControlName="RemittingAccountName" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-          <div class="col-3">
-            <tui-input formControlName="RemittingAccountNo" [readOnly]="!!customer || !!application ">
-              Account Number*
-            </tui-input>
-            <tui-error formControlName="RemittingAccountNo" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-          <div class="col-3">
-            <tui-input formControlName="Email" [readOnly]="!!customer || !!application ">
-              Email*
-            </tui-input>
-            <tui-error formControlName="Email" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-          <div class="col-3">
-            <tui-input formControlName="MobileNo" [readOnly]="!!customer || !!application ">
-              Mobile No.*
-            </tui-input>
-            <tui-error formControlName="MobileNo" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-        </div>
-        <div class="row mt-4 mb-2">
-          <div class="col">
-            <span class="tui-text_body-l pb-4">
-              Beneficiary Details
-            </span>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-3">
-            <tui-input formControlName="BeneficiaryName">
-              Full Name*
-            </tui-input>
-            <tui-error formControlName="BeneficiaryName" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-          <div class="col-3">
-            <tui-input-date tuiUnfinishedValidator="Finish filling the field" formControlName="BeneficiaryDOB">
-              Date of Birth*
-            </tui-input-date>
-            <tui-error formControlName="BeneficiaryDOB" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-          <div class="col-6">
-            <tui-textarea formControlName="BeneficiaryAddress">
-              Beneficiary Address*
-            </tui-textarea>
-            <tui-error formControlName="BeneficiaryAddress" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-        </div>
-        <div class="row mt-4 mb-2">
-          <div class="col">
-            <span class="tui-text_body-l pb-4">
-              Beneficiary Bank and Account Details
-            </span>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-3">
-            <tui-input formControlName="BeneficiaryAccountNumber">
-              Account Number*
-            </tui-input>
-            <tui-error formControlName="BeneficiaryAccountNumber" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-          <div class="col-3">
-            <tui-input formControlName="BeneficiaryIBANNo">
-              IBAN Number (where applicable)*
-            </tui-input>
-            <tui-error formControlName="BeneficiaryIBANNo" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-          <div class="col-3">
-            <tui-input formControlName="BeneficiaryBankName">
-              Bank Name*
-            </tui-input>
-            <tui-error formControlName="BeneficiaryBankName" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-          <div class="col-3">
-            <tui-input formControlName="BeneficiaryBankCode">
-              Bank Code*
-            </tui-input>
-            <tui-error formControlName="BeneficiaryBankCode" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-        </div>
-        <div class="row my-4">
-          <div class="col-3">
-            <tui-select formControlName="BeneficiaryBankCodeType">
-              Bank Code Type*
-              <input tuiTextfield placeholder="Choose the Cody Type" />
-              <tui-data-list-wrapper *tuiDataList [items]="codeType"></tui-data-list-wrapper>
-            </tui-select>
-            <tui-error formControlName="BeneficiaryBankCodeType" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-          <div class="col-3">
-            <tui-input formControlName="BeneficiaryBankSwiftCode">
-              SWIFT Code*
-            </tui-input>
-            <tui-error formControlName="BeneficiaryBankSwiftCode" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-          <div class="col-6">
-            <tui-textarea formControlName="BeneficiaryBankAddress">
-              Bank Address*
-            </tui-textarea>
-            <tui-error formControlName="BeneficiaryBankAddress" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-        </div>
-        <div class="row mt-4 mb-2">
-          <div class="col">
-            <span class="tui-text_body-l pb-4">
-              Funds Transfer Transaction Details
-            </span>
-          </div>
-        </div>
-        <div class="row my-4">
-          <div class="col-3" [tuiTextfieldCleaner]="true">
-            <tui-select formControlName="Currency">
-              Currency*
-              <input tuiTextfield placeholder="Choose a Currency" />
-              <tui-data-list-wrapper *tuiDataList [items]="currencies"></tui-data-list-wrapper>
-            </tui-select>
-            <tui-error formControlName="Currency" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-          <div class="col-3">
-            <tui-input-number formControlName="Amount">
-              Transfer Amount in Figures*
-            </tui-input-number>
-            <tui-error formControlName="Amount" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-          <div class="col-3">
-            <tui-input formControlName="AmountInWord">
-              Transfer Amount in Words*
-            </tui-input>
-            <tui-error formControlName="AmountInWord" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-          <div class="col-3">
-            <tui-select formControlName="Purpose">
-              Purpose*
-              <input tuiTextfield placeholder="Purpose of Payment" />
-              <tui-data-list-wrapper *tuiDataList [items]="purposes"></tui-data-list-wrapper>
-            </tui-select>
-            <tui-error formControlName="Purpose" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-6">
-            <tui-textarea formControlName="DetailsOfPayment">
-              Details of Payment*
-            </tui-textarea>
-            <tui-error formControlName="DetailsOfPayment" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-        </div>
-        <div class="row mt-5" *ngIf="!application">
-          <div class="col">
-            <tui-checkbox-labeled formControlName="accept">
-              <span class="tui-text_body-m">
-                I/We hereby request to processes the above mentioned transaction and debit the above mentioned
-                Remitting Account for the Transfer
-                Amount and also process the Fee and Charges as selected above. I/We, the undersigned, hereby declare to
-                have read and unconditionally
-                agree to the Terms and Conditions.
+          <div class="row mt-4 mb-2">
+            <div class="col">
+              <span class="tui-text_body-l pb-4">
+                Remitter Details*
               </span>
-            </tui-checkbox-labeled>
+            </div>
           </div>
-        </div>
-        <div class="row my-5">
-          <div class="col">
-            <button tuiButton appearance="secondary" [disabled]="formController.invalid">Submit</button>
+          <div class="row">
+            <div class="col-3">
+              <tui-input formControlName="RemittingAccountName" [readOnly]="!!customer || !!application ">
+                Account Name*
+              </tui-input>
+              <tui-error formControlName="RemittingAccountName" [error]="[] | tuiFieldError | async"></tui-error>
+            </div>
+            <div class="col-3">
+              <tui-input formControlName="RemittingAccountNo" [readOnly]="!!customer || !!application ">
+                Account Number*
+              </tui-input>
+              <tui-error formControlName="RemittingAccountNo" [error]="[] | tuiFieldError | async"></tui-error>
+            </div>
+            <div class="col-3">
+              <tui-input formControlName="Email" [readOnly]="!!customer || !!application ">
+                Email*
+              </tui-input>
+              <tui-error formControlName="Email" [error]="[] | tuiFieldError | async"></tui-error>
+            </div>
+            <div class="col-3">
+              <tui-input formControlName="MobileNo" [readOnly]="!!customer || !!application ">
+                Mobile No.*
+              </tui-input>
+              <tui-error formControlName="MobileNo" [error]="[] | tuiFieldError | async"></tui-error>
+            </div>
           </div>
-        </div>
-      </form>
-    </div>
+          <div class="row mt-4 mb-2">
+            <div class="col">
+              <span class="tui-text_body-l pb-4">
+                Beneficiary Details
+              </span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-3">
+              <tui-input formControlName="BeneficiaryName">
+                Full Name*
+              </tui-input>
+              <tui-error formControlName="BeneficiaryName" [error]="[] | tuiFieldError | async"></tui-error>
+            </div>
+            <div class="col-3">
+              <tui-input-date tuiUnfinishedValidator="Finish filling the field" formControlName="BeneficiaryDOB">
+                Date of Birth*
+              </tui-input-date>
+              <tui-error formControlName="BeneficiaryDOB" [error]="[] | tuiFieldError | async"></tui-error>
+            </div>
+            <div class="col-6">
+              <tui-textarea formControlName="BeneficiaryAddress">
+                Beneficiary Address*
+              </tui-textarea>
+              <tui-error formControlName="BeneficiaryAddress" [error]="[] | tuiFieldError | async"></tui-error>
+            </div>
+          </div>
+          <div class="row mt-4 mb-2">
+            <div class="col">
+              <span class="tui-text_body-l pb-4">
+                Beneficiary Bank and Account Details
+              </span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-3">
+              <tui-input formControlName="BeneficiaryAccountNumber">
+                Account Number*
+              </tui-input>
+              <tui-error formControlName="BeneficiaryAccountNumber" [error]="[] | tuiFieldError | async"></tui-error>
+            </div>
+            <div class="col-3">
+              <tui-input formControlName="BeneficiaryIBANNo">
+                IBAN Number (where applicable)*
+              </tui-input>
+              <tui-error formControlName="BeneficiaryIBANNo" [error]="[] | tuiFieldError | async"></tui-error>
+            </div>
+            <div class="col-3">
+              <tui-input formControlName="BeneficiaryBankName">
+                Bank Name*
+              </tui-input>
+              <tui-error formControlName="BeneficiaryBankName" [error]="[] | tuiFieldError | async"></tui-error>
+            </div>
+            <div class="col-3">
+              <tui-input formControlName="BeneficiaryBankCode">
+                Bank Code*
+              </tui-input>
+              <tui-error formControlName="BeneficiaryBankCode" [error]="[] | tuiFieldError | async"></tui-error>
+            </div>
+          </div>
+          <div class="row my-4">
+            <div class="col-3">
+              <tui-select formControlName="BeneficiaryBankCodeType">
+                Bank Code Type*
+                <input tuiTextfield placeholder="Choose the Cody Type" />
+                <tui-data-list-wrapper *tuiDataList [items]="codeType"></tui-data-list-wrapper>
+              </tui-select>
+              <tui-error formControlName="BeneficiaryBankCodeType" [error]="[] | tuiFieldError | async"></tui-error>
+            </div>
+            <div class="col-3">
+              <tui-input formControlName="BeneficiaryBankSwiftCode">
+                SWIFT Code*
+              </tui-input>
+              <tui-error formControlName="BeneficiaryBankSwiftCode" [error]="[] | tuiFieldError | async"></tui-error>
+            </div>
+            <div class="col-6">
+              <tui-textarea formControlName="BeneficiaryBankAddress">
+                Bank Address*
+              </tui-textarea>
+              <tui-error formControlName="BeneficiaryBankAddress" [error]="[] | tuiFieldError | async"></tui-error>
+            </div>
+          </div>
+          <div class="row mt-4 mb-2">
+            <div class="col">
+              <span class="tui-text_body-l pb-4">
+                Funds Transfer Transaction Details
+              </span>
+            </div>
+          </div>
+          <div class="row my-4">
+            <div class="col-3" [tuiTextfieldCleaner]="true">
+              <tui-select formControlName="Currency">
+                Currency*
+                <input tuiTextfield placeholder="Choose a Currency" />
+                <tui-data-list-wrapper *tuiDataList [items]="currencies"></tui-data-list-wrapper>
+              </tui-select>
+              <tui-error formControlName="Currency" [error]="[] | tuiFieldError | async"></tui-error>
+            </div>
+            <div class="col-3">
+              <tui-input-number formControlName="Amount">
+                Transfer Amount in Figures*
+              </tui-input-number>
+              <tui-error formControlName="Amount" [error]="[] | tuiFieldError | async"></tui-error>
+            </div>
+            <div class="col-3">
+              <tui-input formControlName="AmountInWord">
+                Transfer Amount in Words*
+              </tui-input>
+              <tui-error formControlName="AmountInWord" [error]="[] | tuiFieldError | async"></tui-error>
+            </div>
+            <div class="col-3">
+              <tui-select formControlName="Purpose">
+                Purpose*
+                <input tuiTextfield placeholder="Purpose of Payment" />
+                <tui-data-list-wrapper *tuiDataList [items]="purposes"></tui-data-list-wrapper>
+              </tui-select>
+              <tui-error formControlName="Purpose" [error]="[] | tuiFieldError | async"></tui-error>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6">
+              <tui-textarea formControlName="DetailsOfPayment">
+                Details of Payment*
+              </tui-textarea>
+              <tui-error formControlName="DetailsOfPayment" [error]="[] | tuiFieldError | async"></tui-error>
+            </div>
+          </div>
+          <div class="row mt-5" *ngIf="!application">
+            <div class="col">
+              <tui-checkbox-labeled formControlName="accept">
+                <span class="tui-text_body-m">
+                  I/We hereby request to processes the above mentioned transaction and debit the above mentioned
+                  Remitting Account for the Transfer
+                  Amount and also process the Fee and Charges as selected above. I/We, the undersigned, hereby declare
+                  to
+                  have read and unconditionally
+                  agree to the Terms and Conditions.
+                </span>
+              </tui-checkbox-labeled>
+            </div>
+          </div>
+          <div class="row my-5">
+            <div class="col">
+              <button tuiButton appearance="secondary" [disabled]="formController.invalid">Submit</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </tui-loader>
   </div>
 </div>

@@ -172,12 +172,12 @@
             </tui-input>
             <tui-error formControlName="ReferenceNo" [error]="[] | tuiFieldError | async"></tui-error>
           </div>
-          <div class="col-4">
+          <!-- <div class="col-4">
             <tui-input-number formControlName="exchangeRate">
               Exchange Rate
             </tui-input-number>
             <tui-error formControlName="exchangeRate" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
+          </div> -->
           <div class="col-4">
             <tui-input-number formControlName="charges">
               Charges
@@ -206,7 +206,7 @@
           </div>
         </div>
         <br>
-        <div class="row">
+        <!-- <div class="row">
           <div class="col-4">
             <tui-input-files *ngIf="!signature.value" accept="image/*" [formControl]="signature" [link]="'choose signature'"
               (reject)="onReject($event)"></tui-input-files>
@@ -222,7 +222,7 @@
                 [showDelete]="signature.enabled"></tui-file>
             </tui-files>
           </div>
-        </div>
+        </div> -->
         <div class="row mt-5" *ngIf="user.role === ROLE.Branch">
           <div class="col-2">
             <button tuiButton appearance="secondary" (click)="onSubmit()">Submit</button>

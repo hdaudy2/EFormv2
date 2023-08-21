@@ -44,7 +44,6 @@ export class NewComponent {
     ChecksPerformedBy: new FormControl(),
     StaffID: new FormControl(),
     Date: new FormControl(new TuiDay(...this.dateArr)),
-    signature: new FormControl(),
     exchangeRate: new FormControl(),
     charges: new FormControl(),
   });
@@ -90,7 +89,7 @@ export class NewComponent {
   // onCurrencyChange = (currency) => this.selectedCurrency = `${currency} `;
 
   onSubmit = () => {
-    this.application.exchange = +this.formController.get('exchangeRate').value;
+    this.application.exchange = 2.60;
     this.application.stage = ROLE.Branch;
     this.application.statue = STATUS.pending;
     this.application.updatedOn = new Date().toISOString();

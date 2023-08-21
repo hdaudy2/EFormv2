@@ -3,19 +3,21 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { TUI_DATE_FORMAT, TUI_DATE_SEPARATOR, TuiDay } from '@taiga-ui/cdk';
-import { TuiAlertService } from '@taiga-ui/core';
+import { TuiAlertService, tuiLoaderOptionsProvider } from '@taiga-ui/core';
 
 import { ApplicationsService } from '@service/applications.service';
-import { Discrepancy, RemittanceModel, STATUS } from '@model/RemittanceModel.interface';
+import { MockService } from '@service/mock.service';
+import { MailService } from '@service/mail.service';
 
 import Cookies from 'js-cookie';
 import * as shortid from 'shortid';
-import { CustomerModel } from '@model/CustomerModel.interface';
-import { MailService } from '@service/mail.service';
+
 import { MailModel } from '@model/mailModel.interface';
+import { ROLE } from '@model/userModel.interface';
+import { Discrepancy, RemittanceModel, STATUS } from '@model/RemittanceModel.interface';
+import { CustomerModel } from '@model/CustomerModel.interface';
 
 import * as settings from '@setting/config.json';
-import { ROLE } from '@model/userModel.interface';
 
 const config = settings;
 @Component({
@@ -25,6 +27,11 @@ const config = settings;
   providers: [
     { provide: TUI_DATE_FORMAT, useValue: 'YMD' },
     { provide: TUI_DATE_SEPARATOR, useValue: '/' },
+    tuiLoaderOptionsProvider({
+      size: 'l',
+      inheritColor: false,
+      overlay: true,
+    }),
   ],
 })
 export class FormComponent implements OnInit {
@@ -42,10 +49,12 @@ export class FormComponent implements OnInit {
   purposes = ["Personal Transfer", "Loan Payment", "Card Payment", "Invoice Payment", "Other"];
 
   selectedCurrency = "";
+  loader = false;
 
   constructor(
     private readonly RemittanceApplicationService: ApplicationsService,
     private readonly mailService: MailService,
+    private readonly mockService: MockService,
     private readonly router: Router,
     private readonly route: ActivatedRoute,
     private readonly alerts: TuiAlertService
@@ -143,6 +152,18 @@ export class FormComponent implements OnInit {
     accept: new FormControl(false),
   });
 
+  // onFigureChange = () => {
+  //   const figureController = this.formController.get("Amount");
+  //   if(figureController.dirty && figureController.touched){
+  //     this.loader = true;
+
+  //     this.mockService.convertFigureToWord(+figureController.value).subscribe(inWork => {
+  //       this.formController.get("AmountInWord").setValue(inWork);
+  //       this.loader = true;
+  //     })
+  //   }
+  // }
+
   onSubmit = (): void => {
     const value: any = this.formController.value;
 
@@ -188,7 +209,7 @@ export class FormComponent implements OnInit {
     }
 
     if (this.UUID) {
-      if(this.discrepancy){
+      if (this.discrepancy) {
         newRemittance.stage = this.discrepancy.from;
 
         this.discrepancy.status = "resolved";
@@ -202,7 +223,7 @@ export class FormComponent implements OnInit {
           this.alerts.open(`Redirected Back to ${newRemittance.stage}`, { label: "Form Notification", status: 'success' }).subscribe();
           this.router.navigate(['/home']);
         });
-      }else{
+      } else {
         newRemittance.step = [...this.application.step, "Customer Edited Application"];
         newRemittance.createdOn = this.application.createdOn;
 
