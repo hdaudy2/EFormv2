@@ -3,7 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 
 import { HomeComponent } from './pages/home/home.component';
 import { FormComponent } from './pages/form/form.component';
-import { CustomerComponent } from './pages/customer/customer.component';
+import { ViewComponent } from './pages/view/view.component';
+import { ResetComponent } from './pages/reset/reset.component';
 
 const routes: Routes = [
   {
@@ -15,12 +16,16 @@ const routes: Routes = [
     component: FormComponent
   },
   {
-    path: "home",
-    component: HomeComponent
+    path: "reset",
+    component: ResetComponent
+  },
+  {
+    path: "view",
+    component: ViewComponent
   },
   {
     path: "",
-    component: CustomerComponent
+    component: HomeComponent
   },
 ];
 

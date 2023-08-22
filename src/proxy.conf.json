@@ -1,8 +1,0 @@
-{
-  "/figureToWord": {
-    "target": "https://www.dataaccess.com/webservicesserver/numberconversion.wso/NumberToWords",
-    "secure": true,
-    "logLevel": "debug",
-    "changeOrigin": true
-  }
-}

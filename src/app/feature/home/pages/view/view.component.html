@@ -6,7 +6,7 @@
           Remittance
         </p>
         <p class="tui-text_h1">
-          Finalize Application
+          View Application
         </p>
       </div>
     </div>
@@ -133,7 +133,7 @@
       <div class="row">
         <div class="col-3">
           <p class="tui-text_body-m heading m-1">Amount</p>
-          <p class="tui-text_body-xs value mx-1"><tui-money [currency]="'OMR'"
+          <p class="tui-text_body-xs value mx-1"><tui-money [currency]="application?.currency"
               [value]="application?.amount"></tui-money></p>
         </div>
         <div class="col-3">
@@ -147,88 +147,10 @@
       </div>
       <div class="row">
         <div class="col-6">
-          <p class="tui-text_body-m heading m-1">Purpose</p>
-          <p class="tui-text_body-xs value mx-1">{{application?.Purpose}}</p>
-        </div>
-        <div class="col-6">
           <p class="tui-text_body-m heading m-1">Details</p>
           <p class="tui-text_body-xs value mx-1">{{application?.detail}}</p>
         </div>
       </div>
-    </div>
-    <div class="details p-4 mb-5" style="background-color: #fff; border-radius: 20px;" *ngIf="application">
-      <br>
-      <div class="d-flex justify-content-between">
-        <div class="col-2">
-          <p class="tui-text_h6" style="letter-spacing: 1.5px;">Branch Use Only</p>
-        </div>
-      </div>
-      <br>
-      <form [formGroup]="formController">
-        <div class="row">
-          <div class="col-4">
-            <tui-input formControlName="ReferenceNo" [readOnly]="true">
-              Reference Number
-            </tui-input>
-            <tui-error formControlName="ReferenceNo" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-          <!-- <div class="col-4">
-            <tui-input-number formControlName="exchangeRate">
-              Exchange Rate
-            </tui-input-number>
-            <tui-error formControlName="exchangeRate" [error]="[] | tuiFieldError | async"></tui-error>
-          </div> -->
-          <div class="col-4">
-            <tui-input-number formControlName="charges">
-              Charges
-            </tui-input-number>
-            <tui-error formControlName="charges" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-        </div>
-        <br>
-        <div class="row">
-          <div class="col-4">
-            <tui-input-date tuiUnfinishedValidator="Finish filling the field" formControlName="Date">
-              Choose a date
-            </tui-input-date>
-          </div>
-          <div class="col-4">
-            <tui-input formControlName="ChecksPerformedBy" [readOnly]="true">
-              Finalized By
-            </tui-input>
-            <tui-error formControlName="ChecksPerformedBy" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-          <div class="col-4">
-            <tui-input formControlName="StaffID" [readOnly]="true">
-              Staff ID
-            </tui-input>
-            <tui-error formControlName="StaffID" [error]="[] | tuiFieldError | async"></tui-error>
-          </div>
-        </div>
-        <br>
-        <!-- <div class="row">
-          <div class="col-4">
-            <tui-input-files *ngIf="!signature.value" accept="image/*" [formControl]="signature" [link]="'choose signature'"
-              (reject)="onReject($event)"></tui-input-files>
-
-            <tui-files class="tui-space_top-1">
-              <tui-file *ngIf="loadedFiles$ | async as file" [file]="file" [showDelete]="signature.enabled"
-                (removed)="removeFile()"></tui-file>
-
-              <tui-file *ngIf="rejectedFiles$ | async as file" state="error" [file]="file"
-                [showDelete]="signature.enabled" (removed)="clearRejected()"></tui-file>
-
-              <tui-file *ngIf="loadingFiles$ | async as file" state="loading" [file]="file"
-                [showDelete]="signature.enabled"></tui-file>
-            </tui-files>
-          </div>
-        </div> -->
-        <div class="row mt-5" *ngIf="user.role === ROLE.Branch">
-          <div class="col-2">
-            <button tuiButton appearance="secondary" (click)="onSubmit()">Submit</button>
-          </div>
-        </div>
-      </form>
     </div>
   </div>
 </div>

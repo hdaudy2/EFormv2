@@ -16,21 +16,23 @@
       <div class="col">
       </div>
     </div>
-    <div class="p-5 mb-5" style="background-color: #FCD7CB; color: #DD4C1E; border-radius: 20px;" *ngIf="discrepancy">
-      <div class="row">
-        <div class="col">
-          <span class="tui-text_body-xl pb-4" style="font-weight: 600;">
-            Discrepancy
-          </span>
+    <div class="p-5 mb-5" style="background-color: #fff; border-radius: 20px;" *ngIf="customer">
+      <form [formGroup]="searchController" (ngSubmit)="onSearch()">
+        <div class="row">
+          <div class="col-6">
+            <tui-input tuiHintContent="Write a number" formControlName="UUID" class="tui-group__inherit-item">
+              Search using Unique Identifier
+              <input tuiTextfield placeholder="UUID" />
+            </tui-input>
+            <tui-error formControlName="UUID" [error]="[] | tuiFieldError | async"></tui-error>
+          </div>
+          <div class="col-6">
+            <button tuiButton type="submit" [disabled]="searchController.invalid" appearance="primary" size="l">
+              Search
+            </button>
+          </div>
         </div>
-      </div>
-      <div class="row my-2">
-        <div class="col">
-          <span class="tui-text_body-m pb-4">
-            {{discrepancy?.message}}
-          </span>
-        </div>
-      </div>
+      </form>
     </div>
     <tui-loader [showLoader]="loader">
       <div class="p-5 mb-5" style="background-color: #fff; border-radius: 20px;">
@@ -72,10 +74,10 @@
               <tui-error formControlName="RemittingAccountName" [error]="[] | tuiFieldError | async"></tui-error>
             </div>
             <div class="col-3">
-              <tui-input formControlName="RemittingAccountNo" [readOnly]="!!customer || !!application ">
-                Account Number*
+              <tui-input formControlName="CivilID" [readOnly]="!!customer || !!application ">
+                Civil/Residence ID*
               </tui-input>
-              <tui-error formControlName="RemittingAccountNo" [error]="[] | tuiFieldError | async"></tui-error>
+              <tui-error formControlName="CivilID" [error]="[] | tuiFieldError | async"></tui-error>
             </div>
             <div class="col-3">
               <tui-input formControlName="Email" [readOnly]="!!customer || !!application ">
@@ -88,6 +90,15 @@
                 Mobile No.*
               </tui-input>
               <tui-error formControlName="MobileNo" [error]="[] | tuiFieldError | async"></tui-error>
+            </div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col-3">
+              <tui-input formControlName="RemittingAccountNo" [readOnly]="!!customer || !!application ">
+                Account Number*
+              </tui-input>
+              <tui-error formControlName="RemittingAccountNo" [error]="[] | tuiFieldError | async"></tui-error>
             </div>
           </div>
           <div class="row mt-4 mb-2">
@@ -133,7 +144,7 @@
             </div>
             <div class="col-3">
               <tui-input formControlName="BeneficiaryIBANNo">
-                IBAN Number (where applicable)*
+                IBAN Number*
               </tui-input>
               <tui-error formControlName="BeneficiaryIBANNo" [error]="[] | tuiFieldError | async"></tui-error>
             </div>
@@ -189,24 +200,16 @@
               <tui-error formControlName="Currency" [error]="[] | tuiFieldError | async"></tui-error>
             </div>
             <div class="col-3">
-              <tui-input-number formControlName="Amount">
+              <tui-input-number formControlName="Amount" (focusedChange)="onFigureChange()">
                 Transfer Amount in Figures*
               </tui-input-number>
               <tui-error formControlName="Amount" [error]="[] | tuiFieldError | async"></tui-error>
             </div>
-            <div class="col-3">
+            <div class="col-6">
               <tui-input formControlName="AmountInWord">
                 Transfer Amount in Words*
               </tui-input>
               <tui-error formControlName="AmountInWord" [error]="[] | tuiFieldError | async"></tui-error>
-            </div>
-            <div class="col-3">
-              <tui-select formControlName="Purpose">
-                Purpose*
-                <input tuiTextfield placeholder="Purpose of Payment" />
-                <tui-data-list-wrapper *tuiDataList [items]="purposes"></tui-data-list-wrapper>
-              </tui-select>
-              <tui-error formControlName="Purpose" [error]="[] | tuiFieldError | async"></tui-error>
             </div>
           </div>
           <div class="row">
@@ -233,7 +236,7 @@
           </div>
           <div class="row my-5">
             <div class="col">
-              <button tuiButton appearance="secondary" [disabled]="formController.invalid">Submit</button>
+              <button tuiButton appearance="secondary" [disabled]="formController.invalid" *ngIf="!application">Submit</button>
             </div>
           </div>
         </form>

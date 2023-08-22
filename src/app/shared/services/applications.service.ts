@@ -44,12 +44,17 @@ export class ApplicationsService {
   }
 
   Search(uuid: string): Observable<RemittanceModel[]> {
-    const URL = `${this.endpoint}?uuid=${uuid}&statue=initialized`;
+    const URL = `${this.endpoint}?uuid=${uuid}`;
     return this.http.get<RemittanceModel[]>(URL);
   }
 
   updateById(id: number, body: RemittanceModel) {
     const URL = `${this.endpoint}/${id}`;
     return this.http.patch(URL, body);
+  }
+
+  deleteById(id: number) {
+    const URL = `${this.endpoint}/${id}`;
+    return this.http.delete(URL);
   }
 }

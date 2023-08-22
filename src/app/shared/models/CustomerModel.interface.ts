@@ -1,11 +1,11 @@
 export interface CustomerModel {
   id?: number;
-  civilID?: number;
+  uuid?: string;
   branchNo: string;
   branchName: string;
   accountName: string;
-  accountNo: string;
+  civilID: number;
   email: string;
   mobileNo: string;
-  balance: number;
+  accountNo: string;
 }

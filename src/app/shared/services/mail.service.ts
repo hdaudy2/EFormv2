@@ -23,3 +23,4 @@ export class MailService {
     return this.http.post<any>(URL, body);
   }
 }
+

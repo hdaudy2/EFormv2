@@ -1,102 +1,51 @@
 import { Component, OnInit } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 
 import { TuiAlertService } from '@taiga-ui/core';
 import Cookies from 'js-cookie';
 
-import { ApplicationsService } from '@service/applications.service';
+import { CustomerService } from '@service/customer.service';
 
 import { CustomerModel } from '@model/CustomerModel.interface';
-import { RemittanceModel, STATUS } from '@model/RemittanceModel.interface';
-import { ROLE } from '@model/userModel.interface';
+
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
 export class HomeComponent implements OnInit {
+  showSearch: boolean = true;
   customer: CustomerModel;
 
-  // Table
-  applicationList = [];
-  selectedList = [];
-  columns = ['no', 'reference', 'name', 'iban', 'amount', 'currency', 'status', 'date', 'uuid'];
-  total = 0;
-  page = 0;
-  size = 10;
+  readonly searchController = new FormGroup({
+    KYC: new FormControl("", [Validators.required]),
+  });
 
   constructor(
-    private readonly RemittanceApplicationService: ApplicationsService,
+    private readonly customerService: CustomerService,
     private readonly router: Router,
     private readonly alerts: TuiAlertService) { }
 
   ngOnInit(): void {
-    this.customer = JSON.parse(Cookies.get('customer'));
-    this.RemittanceApplicationService.getAllCustomerSubmissions(this.customer?.accountNo).subscribe(list => {
-      this.applicationList = list.map((el, index) => {
-        let isEditable = true;
-        if (el.stage === ROLE.Customer) {
-          const Discrepancy = el?.Discrepancy.filter(el => el.to === ROLE.Customer && el.status === STATUS.pending).reverse()[0];
-          if (Discrepancy || el.statue === 'initialized') isEditable = false;
-        }
+    const customer = Cookies.get('customer')
 
-        return {
-          no: index + 1,
-          reference: el.uuid,
-          name: el.beneficiary.name,
-          iban: el.beneficiary.iban,
-          amount: el.amount,
-          currency: el.currency,
-          status: el.statue,
-          date: el.date,
-          uuid: el.uuid,
-          isEditable
-        }
-      });
+    if(customer) this.showSearch = false;
+  }
 
-      this.total = this.applicationList.length;
-      this.prepareData();
+  onSearch = () => {
+    const value = this.searchController.value;
+
+    this.customerService.getByUUID(value.KYC).subscribe(res => {
+      if(res.length > 0){
+        const customer = res[0];
+        Cookies.set('customer', JSON.stringify(customer));
+        this.showSearch = false;
+        this.alerts.open("Fetching Information, Successful", { label: "Notification", status: 'success' }).subscribe();
+      }else{
+        this.alerts.open(`No Record Found`, { label: "Error", status: 'error' }).subscribe();
+        this.searchController.reset();
+      }
     });
-  }
-
-  prepareData() {
-    let list = [...this.applicationList];
-    let startingPoint = (this.page * this.size);
-    let endingPoint = (this.page * this.size) + this.size;
-
-    this.selectedList = list.slice(startingPoint, endingPoint);
-    this.total = list.length;
-  }
-
-  editDisable(status) {
-    let result = false;
-
-    switch (status) {
-      case STATUS.pending:
-        result = true;
-        break;
-      case STATUS.approved:
-        result = true;
-        break;
-      case STATUS.rejected:
-        result = true;
-        break;
-    }
-
-    return result;
-  }
-
-  view(uuid: string) {
-    this.router.navigate(['/form-remittance', uuid]);
-  }
-
-  onPage(page: number) {
-    this.page = page;
-    this.prepareData();
-  }
-  onSize(size: number) {
-    this.size = size;
-    this.page = 0;
-    this.prepareData();
   }
 }

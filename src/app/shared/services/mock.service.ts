@@ -18,9 +18,4 @@ export class MockService {
     const URL = `${this.endpoint}?count=${count}&key=af567ec0`;
     return this.http.get<UserModel[]>(URL);
   }
-
-  convertFigureToWord(figure: number): Observable<string> {
-    const URL = `figureToWord`;
-    return this.http.post<string>(URL, { ubiNum: figure });
-  }
 }
